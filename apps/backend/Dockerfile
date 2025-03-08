@@ -24,13 +24,19 @@ COPY --from=builder /app/package*.json ./
 
 # Sécurité : Droits et utilisateur
 RUN chown -R node:node /app
+
+# Copier le script d'entrée
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
+# Passer à l'utilisateur root pour changer les permissions
+USER root
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Revenir à l'utilisateur node
 USER node
 
 # Exposer le port
 EXPOSE 5000
 
 # Utiliser un script d'entrée sécurisé
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-

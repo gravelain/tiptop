@@ -1,0 +1,9 @@
+config:
+  target: "https://api.tiptop.com"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+scenarios:
+  - flow:
+      - get:
+          url: "/health"

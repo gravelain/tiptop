@@ -1,0 +1,20 @@
+services:
+  backend:
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+    deploy:
+      replicas: 3
+    labels:
+      - "traefik.http.routers.backend.rule=Host(`api.tiptop.com`)"
+      - "traefik.http.routers.backend.middlewares=retry@docker"
+
+  frontend:
+    environment:
+      NODE_ENV: production
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`tiptop.com`)"
+
+  mysql:
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}

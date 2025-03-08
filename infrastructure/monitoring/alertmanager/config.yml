@@ -1,0 +1,11 @@
+route:
+  receiver: 'email-notifications'
+receivers:
+  - name: 'email-notifications'
+    email_configs:
+      - to: 'admin@tiptop.com'
+        from: 'alertmanager@tiptop.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'your-email@gmail.com'
+        auth_identity: 'your-email@gmail.com'
+        auth_password: 'your-email-password'

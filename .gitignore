@@ -1,0 +1,28 @@
+# Fichiers sensibles
+.env
+.env.local
+.env.dev
+.env.test
+.env.production
+
+# Dossiers spécifiques à Docker
+infrastructure/reverse-proxy/letsencrypt/acme.json
+postgres_data/
+jenkins_data/
+prometheus_data/
+grafana_data/
+
+# Node.js & Frontend
+node_modules/
+dist/
+build/
+
+# Python (si utilisé)
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE et OS
+.vscode/
+.idea/
+.DS_Store

@@ -4,7 +4,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_dev
     ports:
-      - "3001:3000"
+      - "5000:5000"
 
   frontend:
     environment:

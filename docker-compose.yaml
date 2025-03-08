@@ -107,14 +107,20 @@ services:
     image: dpage/pgadmin4
     container_name: my-project-the-tiptop-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com" # L'email de connexion
-      PGADMIN_DEFAULT_PASSWORD: "admin" # Le mot de passe de connexion
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"  # L'email de connexion
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"  # Le mot de passe de connexion
+      PGADMIN_SERVER_HOST: "${PGADMIN_SERVER_HOST}"  # Hôte du serveur PostgreSQL
+      PGADMIN_SERVER_PORT: "${PGADMIN_SERVER_PORT}"  # Port du serveur PostgreSQL
+      PGADMIN_SERVER_USER: "${PGADMIN_SERVER_USER}"  # Utilisateur PostgreSQL
+      PGADMIN_SERVER_PASSWORD: "${PGADMIN_SERVER_PASSWORD}"  # Mot de passe PostgreSQL
     ports:
       - "5050:80"  # Port d'accès (ex: http://localhost:5050)
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - tiptop-network 
   # CI/CD
   jenkins:
     image: jenkins/jenkins:2.426.1-lts-jdk17
@@ -137,6 +143,7 @@ services:
 
 volumes:
   postgres_data:
+  pgadmin_data:
   jenkins_data:
   prometheus_data:
   grafana_data:

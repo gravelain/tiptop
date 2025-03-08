@@ -29,7 +29,6 @@ Le projet est déployé sur un **VPS** avec l'IP [95.111.240.167](http://95.111.
 | **NestJS**  | Backend | Framework modulaire et scalable basé sur Node.js avec support TypeScript, idéal pour des APIs performantes. |
 | **Next.js**  | Frontend | Framework React optimisé pour le rendu côté serveur (SSR) et les performances SEO. |
 | **PostgreSQL** | Base de données (SonarQube) | Base relationnelle robuste et performante, utilisée pour stocker les données de SonarQube. |
-| **MySQL** | Base de données (Application) | Base de données SQL légère et rapide pour gérer les données métiers de l'application. |
 | **Docker**  | Conteneurisation | Permet l’isolation des services et assure la portabilité entre les environnements. |
 | **Docker Compose**  | Orchestration des services | Facilite la gestion de multiples conteneurs et leurs dépendances. |
 | **Jenkins**  | CI/CD | Automatisation des tests, des builds, et des déploiements. |

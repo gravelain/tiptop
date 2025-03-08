@@ -2,7 +2,7 @@ services:
   backend:
     environment:
       NODE_ENV: production
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     deploy:
       replicas: 3
     labels:
@@ -14,7 +14,3 @@ services:
       NODE_ENV: production
     labels:
       - "traefik.http.routers.frontend.rule=Host(`tiptop.com`)"
-
-  mysql:
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}

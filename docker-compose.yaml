@@ -23,12 +23,12 @@ services:
     build: ./apps/backend
     environment:
       NODE_ENV: production
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     labels:
       - "traefik.http.routers.backend.rule=Host(`api.tiptop.com`)"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - tiptop-network
@@ -79,25 +79,6 @@ services:
       - tiptop-network
 
   # Bases de données
-  mysql:
-    image: mysql:8.0.34
-    ports:
-      - "3306:3306"
-    env_file: .env
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - tiptop-network
 
   postgres:
     image: postgres:15.4-alpine
@@ -134,7 +115,6 @@ services:
       - tiptop-network
 
 volumes:
-  mysql_data:
   postgres_data:
   jenkins_data:
   prometheus_data:

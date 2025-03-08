@@ -2,7 +2,7 @@ services:
   backend:
     environment:
       NODE_ENV: staging
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}_preprod
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_preprod
     deploy:
       replicas: 2
     ports:
@@ -13,7 +13,3 @@ services:
       NODE_ENV: staging
     ports:
       - "3001:3000"
-
-  mysql:
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}_preprod

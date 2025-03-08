@@ -1,9 +1,6 @@
+# My Project - The Tip Top
 
-# The Tip Top
-
-Bienvenue dans le projet **"The Tip Top"**, une plateforme web d’analyse et de visualisation des données de performance et des alertes sur des applications. Ce projet repose sur une architecture microservices, conteneurisée avec Docker et orchestrée via Docker Compose v2. Il utilise des outils comme **Prometheus** et **Grafana** pour la surveillance, **SonarQube** pour l'analyse de la qualité du code, et **Jenkins** pour l'intégration continue et le déploiement.
-
-Le déploiement est effectué sur une instance **EC2 AWS** afin de garantir des performances optimisées et une disponibilité élevée.
+Bienvenue dans le projet **"My Project - The Tip Top"**, une plateforme web de jeu concours permettant aux utilisateurs de remporter des lots via un code de jeu obtenu sur leur ticket de caisse. Ce projet repose sur une architecture **microservices**, conteneurisée avec **Docker** et orchestrée via **Docker Compose v2**.
 
 ## Table des matières
 
@@ -19,146 +16,259 @@ Le déploiement est effectué sur une instance **EC2 AWS** afin de garantir des 
 
 ## Introduction
 
-Le projet **The Tip Top** est une application de monitoring et d’analyse de performance des services. Il est composé de plusieurs services fonctionnant ensemble pour gérer et visualiser les métriques des applications déployées. Les principaux outils de ce projet sont :
+Ce projet repose sur une architecture **microservices** où chaque composant (frontend, backend, base de données, monitoring) est conteneurisé dans un **Docker**. L’infrastructure utilise **Docker Compose** pour l’orchestration des services et **Traefik** comme proxy inverse. Le backend est développé avec **NestJS** et le frontend avec **Next.js**.
 
-- **Prometheus** : collecte les métriques et les enregistre.
-- **Grafana** : affiche les métriques collectées via Prometheus.
-- **SonarQube** : analyse la qualité du code.
-- **Jenkins** : gère l’intégration continue (CI/CD).
-- **Traefik** : proxy inverse pour le routage des requêtes et le SSL.
+L'application s’appuie sur **SonarQube** pour l'analyse de la qualité du code et utilise des bases de données **PostgreSQL** pour SonarQube et **MySQL** pour les données métiers de l’application. **Prometheus** et **Grafana** sont utilisés pour la collecte et la visualisation des métriques de performance.
 
-L'infrastructure est déployée sur une instance **EC2 AWS** avec Docker et Docker Compose, facilitant le déploiement et la gestion des services.
+Le projet est déployé sur un **VPS** avec l'IP [95.111.240.167](http://95.111.240.167/).
 
 ## Technologies utilisées
 
-| Technologie        | Utilité                                | Justification                                                                                      |
-|--------------------|----------------------------------------|----------------------------------------------------------------------------------------------------|
-| **Docker**         | Conteneurisation                       | Permet d’isoler les services et assure leur portabilité entre différents environnements.           |
-| **Docker Compose** | Orchestration des services             | Simplifie la gestion de multiples conteneurs et la gestion de leurs dépendances.                   |
-| **Prometheus**     | Collecte de métriques                  | Outil de monitoring pour collecter les métriques de performance des différents services.            |
-| **Grafana**        | Visualisation des métriques            | Interface graphique pour visualiser les métriques collectées par Prometheus.                       |
-| **SonarQube**      | Analyse de la qualité du code          | Permet de suivre la qualité du code source et détecter les vulnérabilités et problèmes.             |
-| **Jenkins**        | CI/CD                                  | Permet d’automatiser le processus de test, build et déploiement des applications.                   |
-| **Traefik**        | Proxy inverse et Load Balancer         | Gère le routage des requêtes entrantes et distribue la charge entre les services.                   |
-| **PostgreSQL**     | Base de données                        | Base de données pour stocker les données liées à SonarQube (analyse de la qualité du code) et les autres services métiers. |
+| Technologie  | Utilité  | Justification  |
+|--------------|---------|----------------|
+| **NestJS**  | Backend | Framework modulaire et scalable basé sur Node.js avec support TypeScript, idéal pour des APIs performantes. |
+| **Next.js**  | Frontend | Framework React optimisé pour le rendu côté serveur (SSR) et les performances SEO. |
+| **PostgreSQL** | Base de données (SonarQube) | Base relationnelle robuste et performante, utilisée pour stocker les données de SonarQube. |
+| **MySQL** | Base de données (Application) | Base de données SQL légère et rapide pour gérer les données métiers de l'application. |
+| **Docker**  | Conteneurisation | Permet l’isolation des services et assure la portabilité entre les environnements. |
+| **Docker Compose**  | Orchestration des services | Facilite la gestion de multiples conteneurs et leurs dépendances. |
+| **Jenkins**  | CI/CD | Automatisation des tests, des builds, et des déploiements. |
+| **Prometheus**  | Monitoring | Outil de collecte et de stockage de métriques pour surveiller l’application. |
+| **Grafana**  | Visualisation | Interface graphique pour suivre les métriques collectées par Prometheus. |
+| **SonarQube**  | Analyse de code | Outil pour analyser la qualité du code et détecter les vulnérabilités. |
+| **Traefik**  | Proxy inverse et Load Balancer | Permet de gérer le routage du trafic et l'équilibrage de charge, avec des fonctionnalités SSL et de sécurité. |
 
-## Architecture du projet
 
-Le projet utilise une architecture **microservices** où chaque composant fonctionne de manière isolée dans des conteneurs Docker. **Docker Compose** permet de gérer et orchestrer ces conteneurs de manière simple et fluide.
 
-### Architecture simplifiée :
+---
+
+
+
+## 📂 Structure du Projet
+
+
+Voici la structure du projet détaillée :
+
+```plaintext
+my-project/
+├── backend/                 # Code source du backend (NestJS)
+│   ├── Dockerfile           # Dockerfile pour construire l'image du backend
+│   ├── package.json         # Définition des dépendances et scripts NPM
+│   ├── package-lock.json    # Verrouillage des versions des dépendances
+│   └── src/                 # Code source de l'application NestJS
+│       ├── main.ts          # Point d'entrée de l'application
+│       ├── app.module.ts    # Module principal de l'application
+│       ├── app.controller.ts# Exemple de contrôleur
+│       └── app.service.ts   # Exemple de service
+│       └── ...              # Autres modules, controllers, services, etc.
+├── frontend/                # Code source du frontend (Next.js)
+│   ├── Dockerfile           # Dockerfile pour construire l'image du frontend
+│   ├── package.json         # Dépendances et scripts de l'application Next.js
+│   ├── package-lock.json    # Verrouillage des versions
+│   └── pages/               # Pages de l'application Next.js
+│       ├── index.js         # Page d'accueil
+│       ├── _app.js          # Configuration globale de Next.js
+│       └── ...              # Autres pages et composants
+├── grafana/                 # Configuration et dashboards Grafana
+│   ├── dashboards/          # Fichiers JSON des dashboards personnalisés
+│   └── grafana.ini          # Fichier de configuration de Grafana (optionnel)
+├── jenkins/                 # Configuration de Jenkins pour CI/CD
+│   ├── data/                # Volume de persistance (jobs, plugins, configuration)
+│   └── Jenkinsfile          # Pipeline Jenkins définissant les étapes CI/CD
+├── monitoring/              # Fichiers de configuration pour la surveillance
+│   └── alerting/            # Scripts/fichiers pour la gestion des alertes (optionnel)
+├── prometheus/              # Configuration de Prometheus
+│   └── prometheus.yml       # Fichier principal de configuration de Prometheus
+├── scripts/                 # Scripts utilitaires et de déploiement
+│   ├── deploy.sh            # Script pour déployer l'infrastructure
+│   └── backup.sh            # Script de sauvegarde des données (optionnel)
+├── sonarqube/               # Configuration de SonarQube (personnalisable)
+│   └── sonar.properties     # Fichier de configuration de SonarQube (optionnel)
+├── traefik/                 # Configuration du reverse proxy Traefik
+│   └── traefik.yml          # Fichier de configuration principal de Traefik
+├── docker-compose.yml       # Configuration principale des services Docker (production)
+├── docker-compose.dev.yml   # Configuration spécifique pour l'environnement de développement
+├── docker-compose.preprod.yml # Configuration pour la préproduction
+├── docker-compose.prod.yml  # Configuration pour l'environnement de production
+└── .env.*                   # Fichiers d'environnement (ex: .env, .env.local, .env.production)
+
 ```
-+------------------+    +------------------+    +---------------------+
-|   Frontend (Next.js)   |<-->|  Backend (NestJS)  |<-->|   PostgreSQL (DB)   |
-+------------------+    +------------------+    +---------------------+
-         |                      |                         |
-         |                      |                         |
-    +--------------------------+                         |
-    |   Traefik (Proxy Inverse) |<------------------------+
-    +--------------------------+
-         |
-+-----------------------+
-|   SonarQube (Analyse)  |
-+-----------------------+
-         |
-+-----------------------+
-|   Jenkins (CI/CD)      |
-+-----------------------+
-         |
-+-----------------------+
-|   Prometheus (Metrics) |
-+-----------------------+
-         |
-+-----------------------+
-|   Grafana (Monitoring) |
-+-----------------------+
-```
 
-### Description des composants principaux :
+---
 
-- **Frontend (Next.js)** : Application web qui interagit avec le backend.
-- **Backend (NestJS)** : API RESTful pour gérer les données et interagir avec la base de données.
-- **PostgreSQL** : Base de données relationnelle utilisée pour stocker les données d'application et de SonarQube.
-- **SonarQube** : Outil d'analyse statique pour vérifier la qualité du code source.
-- **Prometheus & Grafana** : Collecte des métriques et visualisation de la performance du système.
-- **Jenkins** : Automatisation du pipeline CI/CD pour l’intégration et le déploiement.
-- **Traefik** : Proxy inverse qui gère les requêtes et assure la distribution de charge et la gestion du SSL.
 
 ## Services et ports d’accès
 
-| Service              | Conteneur                      | Port Local            | Port VPS (Accès Public)   | Description                                      |
-|----------------------|--------------------------------|-----------------------|---------------------------|--------------------------------------------------|
-| **Frontend (Next.js)**| frontend                       | 3000                  | 95.111.240.167:3000       | Interface utilisateur pour interagir avec l’application. |
-| **Backend (NestJS)**  | backend                        | 3001                  | 95.111.240.167:3001       | API RESTful pour gérer les services métiers.     |
-| **Base de Données (PostgreSQL)** | db_postgresql           | 5432                  | 95.111.240.167:5432       | Base de données pour stocker les données liées à SonarQube. |
-| **SonarQube**         | sonarqube                      | 9000                  | 95.111.240.167:9000       | Analyse de la qualité du code.                   |
-| **Prometheus**        | prometheus                     | 9090                  | 95.111.240.167:9090       | Collecte des métriques de performance.           |
-| **Grafana**           | grafana                        | 3001                  | 95.111.240.167:3001       | Visualisation des métriques collectées par Prometheus. |
-| **Jenkins**           | jenkins                        | 8080, 50000           | 95.111.240.167:8080       | Outil CI/CD pour automatiser les builds et les déploiements. |
-| **Traefik**           | traefik                        | 80                    | 95.111.240.167:80         | Proxy inverse et Load Balancer.                  |
+
+| Service               | Conteneur         | Port Local | Port VPS (Accès Public) | Description                      |
+|-----------------------|-------------------|------------|-------------------------|----------------------------------|
+| **Frontend (Next.js)** | frontend          | 3000       | 95.111.240.167:3000      | Interface utilisateur           |
+| **Backend (NestJS)**   | backend           | 4000       | 95.111.240.167:4000      | API RESTful du backend          |
+| **Base de Données (MySQL)** | db_mysql        | 3306       | 95.111.240.167:3306      | Base de données MySQL pour l'application |
+| **SonarQube**          | sonarqube         | 9000       | 95.111.240.167:9000      | Analyse de code et qualité du projet |
+| **Base de Données (PostgreSQL pour SonarQube)** | db_postgresql  | 5432       | 95.111.240.167:5432      | Base de données PostgreSQL pour SonarQube |
+| **Prometheus**         | prometheus        | 9090       | 95.111.240.167:9090      | Collecte des métriques          |
+| **Grafana**            | grafana           | 3001       | 95.111.240.167:3001      | Visualisation des métriques     |
+| **Jenkins**            | jenkins           | 8080, 50000| 95.111.240.167:8080      | CI/CD et gestion des pipelines  |
+| **Traefik**            | traefik           | 80         | 95.111.240.167:80        | Proxy inverse et Load Balancer  |
 
 ## Configuration de l’environnement
 
-Avant de démarrer, vous devez configurer votre environnement en fonction de vos besoins (développement, préproduction, production).
+Commandes utiles
+dcu : Démarre les services en arrière-plan
+dcd : Arrêt des services
+dcr : Redémarrage des services
+dcl : Voir les logs globaux
+dbackend : Démarrer uniquement le backend
+dfrontend : Démarrer uniquement le frontend
 
-### Variables d'environnement
 
-Créez ou mettez à jour un fichier `.env` dans la racine du projet pour définir les variables spécifiques à votre environnement :
-
-```bash
-DATABASE_URL=postgres://admin:admin@db:5432/mydatabase
-JWT_SECRET=mysecretkey
-NODE_ENV=production
-```
-
-## Commandes utiles
-
-Voici quelques commandes pour gérer l’infrastructure :
-
-| Commande       | Description                                                                 |
-|----------------|-----------------------------------------------------------------------------|
-| `dcu`          | Démarre tous les services en arrière-plan                                    |
-| `dcd`          | Arrête tous les services                                                     |
-| `dcr`          | Redémarre les services                                                       |
-| `dcl`          | Affiche les logs globaux                                                     |
-| `dbackend`     | Démarre uniquement le service backend                                        |
-| `dfrontend`    | Démarre uniquement le service frontend                                       |
-| `dlogs_backend`| Affiche les logs du backend                                                  |
-| `dlogs_frontend`| Affiche les logs du frontend                                                |
-| `dbash`        | Ouvre un shell bash dans le conteneur backend                               |
-
-## Démarrer les services
-
-Pour démarrer l’ensemble des services, utilisez la commande suivante :
-
-```bash
-dcu
-```
-
-Pour démarrer un service spécifique, par exemple le backend :
-
-```bash
-dbackend
-```
-
-## Accéder aux conteneurs
-
-Vous pouvez accéder à un conteneur en utilisant la commande suivante (exemple pour le backend) :
-
-```bash
-docker exec -it my-project-the-tiptop-backend-1 bash
-```
-
-Cela vous permettra de lancer des commandes directement dans le conteneur backend.
-
-## Conclusion
-
-Le projet **The Tip Top** fournit une architecture robuste et modulable pour le monitoring et la gestion des services à grande échelle. Il est conçu pour être facilement extensible et déployé dans différents environnements. Grâce à l’utilisation de Docker, Docker Compose, et des outils comme Jenkins, Prometheus, Grafana et SonarQube, vous avez une infrastructure solide pour collecter des métriques, surveiller la qualité du code et automatiser le déploiement de vos services.
 
 ---
 
-**Let's Go! 🚀**
+## 🛠 Services Définis
 
-Si tu rencontres des problèmes ou as des questions, n’hésite pas à ouvrir un ticket ou à poser tes questions dans la section *Issues* du repository GitHub.
+### Base de Données (PostgreSQL)
+- Image : `postgres:15-alpine`
+- Port : `5432`
+- Stockage persistant : `db-data:/var/lib/postgresql/data`
+
+### Backend (NestJS)
+- Construit depuis `./backend`
+- Variables d'environnement :
+  - `NODE_ENV`
+  - `DATABASE_URL=postgres://admin:admin@db:5432/mydatabase`
+  - `JWT_SECRET=mysecretkey`
+- Port : `4000`
+
+### Frontend (Next.js)
+- Construit depuis `./frontend`
+- Port : `3000`
+
+### Monitoring (Prometheus & Grafana)
+- **Prometheus** : `prom/prometheus:v2.45.0`, exposé sur `9090`
+- **Grafana** : `grafana/grafana-oss:10.2.2`, exposé sur `3001`
+
+### Analyse de Code (SonarQube)
+- Image : `sonarqube:lts`
+- Port : `9000`
+- Base de données dédiée sur PostgreSQL
+
+### Intégration Continue (Jenkins)
+- Image : `jenkins/jenkins:lts-jdk17`
+- Ports : `8080`, `50000`
+
+### Proxy Inverse (Traefik)
+- Image : `traefik:v2.5`
+- Port : `80`
+- Configuration : Activation du mode API et détection automatique des conteneurs Docker
 
 ---
+
+
+## 🔄 CI/CD & Déploiement
+L'intégration continue et le déploiement sont gérés avec **Jenkins** sur un **VPS**. Jenkins est configuré pour :
+- Exécuter des tests automatisés (linting, unit tests, intégration...)
+- Construire et pousser des images Docker
+- Déployer l'application sur le serveur VPS
+
+Grâce à cette infrastructure, les nouvelles versions du projet sont automatiquement testées et déployées en production de manière sécurisée et optimisée.
+
+
+---
+
+## 🚀 Utilisation avec Docker Compose
+
+### 🌟 Définition de l'environnement
+
+Ajoutez cette fonction à votre `.bashrc` ou `.zshrc` :
+
+```bash
+dcenv() {
+  case "$1" in
+    dev|preprod|prod)
+      export ENV=$1
+      export ENV_FILE=".env.$ENV"
+      echo "✅ Environnement défini sur : $ENV"
+      ;;
+    *)
+      echo "❌ Spécifie un environnement valide : dev, preprod ou prod"
+      return 1
+      ;;
+  esac
+}
+```
+
+
+### 🌟 Choisir son environnement
+
+En fonction de si vous souhaitez travailler en dev, preprod ou prod, il faudrait selectionner son 
+environnement de travail avant de démarrer les services : choisi ton env et tape la commande appropriée! 
+
+```bash
+dcenv dev  #  ✅ Environnement défini sur : dev
+```
+
+```bash
+dcenv preprod  #  ✅ Environnement défini sur : preprod
+```
+
+
+```bash
+dcenv prod  #  ✅ Environnement défini sur : prod
+```
+
+
+#### 🏗 Démarrer les services
+```bash
+dcu  # Up (démarrage des services en arrière-plan)
+```
+
+#### ❌ Arrêter les services
+```bash
+dcd  # Down (arrêt des services)
+```
+
+#### 🔄 Redémarrer les services
+```bash
+dcr  # Restart
+```
+
+#### 🔍 Voir les logs
+```bash
+dcl  # Logs globaux
+```
+
+#### 🎯 Démarrer un service spécifique
+```bash
+dbackend  # Backend
+dfrontend # Frontend
+ddb       # Base de données
+```
+
+#### 📜 Logs spécifiques
+```bash
+dlogs_backend  # Backend
+dlogs_frontend # Frontend
+dlogs_db       # Base de données
+```
+
+#### 🖥 Accéder aux conteneurs
+```bash
+dbash  # Ouvrir un shell bash dans le backend
+dsh    # Ouvrir un shell sh dans le backend
+dpsql  # Ouvrir PostgreSQL avec psql
+```
+
+---
+
+## 📌 Remarque
+Assurez-vous d'avoir Docker et Docker Compose v2 installés sur votre machine avant d'exécuter ces commandes. Vous pouvez vérifier les versions avec :
+
+```bash
+docker --version
+docker compose version
+```
+
+Let's Go ! 🚀
+

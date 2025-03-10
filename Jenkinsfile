@@ -54,7 +54,9 @@ pipeline {
                 script {
                     echo '🧪 Exécution des tests Frontend (Next.js)...'
                     dir('apps/frontend') {
-                        sh 'CI=true npm test'
+                        sh 'npm cache clean --force'
+                        sh 'npm ci'
+                        sh 'npx jest --config=jest.config.js'
                     }
                 }
             }

@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         SONARQUBE_URL = 'http://sonarqube:9000'
-        SONARQUBE_TOKEN = credentials('sonarqube-token')
+        SONARQUBE_TOKEN = credentials('sonarqube-token-last')
     }
 
     tools {
@@ -34,6 +34,28 @@ pipeline {
             }
         }
 
+        stage('Test Backend') {
+            steps {
+                script {
+                    echo '🧪 Exécution des tests Backend (NestJS)...'
+                    dir('apps/backend') {
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+
+        stage('Test Frontend') {
+            steps {
+                script {
+                    echo '🧪 Exécution des tests Frontend (Next.js)...'
+                    dir('apps/frontend') {
+                        sh 'CI=true npm test'
+                    }
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -41,11 +63,22 @@ pipeline {
                     withSonarQubeEnv('SonarQube') {
                         sh '''
                             npx sonar-scanner \
-                                -Dsonar.projectKey=tiptop \
-                                -Dsonar.sources=apps/backend/src,apps/frontend/src \
+                                -Dsonar.projectKey=sonarqube_project \
+                                -Dsonar.sources=apps/backend/src,apps/frontend/src,apps/frontend/src/app \
                                 -Dsonar.host.url=${SONARQUBE_URL} \
                                 -Dsonar.login=${SONARQUBE_TOKEN}
                         '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    echo '🔎 Vérification du Quality Gate SonarQube...'
+                    timeout(time: 3, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
                     }
                 }
             }
@@ -73,57 +106,36 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
-            steps {
-                script {
-                    echo '🧪 Exécution des tests Backend (NestJS)...'
-                    dir('apps/backend') {
-                        sh 'npm test'
-                    }
-                }
-            }
-        }
-
-        stage('Test Frontend') {
-            steps {
-                script {
-                    echo '🧪 Exécution des tests Frontend (Next.js)...'
-                    dir('apps/frontend') {
-                        sh 'CI=true npm test'
-                    }
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    echo '🔎 Vérification du Quality Gate SonarQube...'
-                    timeout(time: 3, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
-
         stage('Docker Build & Push') {
             steps {
                 script {
                     echo '🐳 Connexion au registre Docker...'
-                    withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    // Connexion à Docker Hub avec ton nom d'utilisateur Docker
+                    withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', 
+                                                    usernameVariable: 'DOCKER_USER', 
+                                                    passwordVariable: 'DOCKER_PASS')]) {
                         sh """
-                            docker login -u $DOCKER_USER -p $DOCKER_PASS registry.example.com
+                            docker login -u $DOCKER_USER -p $DOCKER_PASS
                         """
                     }
 
                     echo '🐳 Construction et push de l’image Docker...'
+                    // Construction des images pour le backend et le frontend
                     sh """
-                        docker build -t mon-backend apps/backend
-                        docker build -t mon-frontend apps/frontend
-                        docker tag mon-backend registry.example.com/mon-backend:latest
-                        docker tag mon-frontend registry.example.com/mon-frontend:latest
-                        docker push registry.example.com/mon-backend:latest
-                        docker push registry.example.com/mon-frontend:latest
+                        docker build -t thierrytemgoua98/mon-backend apps/backend
+                        docker build -t thierrytemgoua98/mon-frontend apps/frontend
+                    """
+
+                    // Tagging des images avec les bons tags
+                    sh """
+                        docker tag thierrytemgoua98/mon-backend thierrytemgoua98/mon-backend:latest
+                        docker tag thierrytemgoua98/mon-frontend thierrytemgoua98/mon-frontend:latest
+                    """
+
+                    // Push des images vers Docker Hub
+                    sh """
+                        docker push thierrytemgoua98/mon-backend:latest
+                        docker push thierrytemgoua98/mon-frontend:latest
                     """
                 }
             }
@@ -143,15 +155,9 @@ pipeline {
         success {
             echo '✅ Pipeline terminé avec succès !'
             sh './scripts/backup.sh'
-            emailext subject: '✅ Build réussi - ${JOB_NAME} #${BUILD_NUMBER}',
-                     body: 'Le build de ${JOB_NAME} #${BUILD_NUMBER} a réussi.\nVoir les logs : ${BUILD_URL}',
-                     recipientProviders: [developers()]
         }
         failure {
             echo '❌ Échec du pipeline !'
-            emailext subject: '❌ Build échoué - ${JOB_NAME} #${BUILD_NUMBER}',
-                     body: 'Le build de ${JOB_NAME} #${BUILD_NUMBER} a échoué.\nVoir les logs : ${BUILD_URL}',
-                     recipientProviders: [developers()]
         }
     }
 }

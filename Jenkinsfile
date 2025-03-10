@@ -24,10 +24,12 @@ pipeline {
                 script {
                     echo '📦 Installation des dépendances Backend...'
                     dir('apps/backend') {
+                        sh 'npm cache clean --force'
                         sh 'npm ci --omit=dev'
                     }
                     echo '📦 Installation des dépendances Frontend...'
                     dir('apps/frontend') {
+                        sh 'npm cache clean --force'
                         sh 'npm ci --omit=dev'
                     }
                 }
@@ -39,6 +41,7 @@ pipeline {
                 script {
                     echo '🧪 Exécution des tests Backend (NestJS)...'
                     dir('apps/backend') {
+                        sh 'npx jest'
                         sh 'npm test'
                     }
                 }

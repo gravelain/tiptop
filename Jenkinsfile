@@ -41,8 +41,8 @@ pipeline {
                     withSonarQubeEnv('SonarQube') {
                         sh '''
                             npx sonar-scanner \
-                                -Dsonar.projectKey=tiptop \
-                                -Dsonar.sources=apps/backend/src,apps/frontend/src \
+                                -Dsonar.projectKey=sonarqube_project \
+                                -Dsonar.sources=apps/backend/src,apps/frontend/src,apps/frontend/src/app \
                                 -Dsonar.host.url=${SONARQUBE_URL} \
                                 -Dsonar.login=${SONARQUBE_TOKEN}
                         '''

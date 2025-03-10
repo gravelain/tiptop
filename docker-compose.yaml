@@ -124,6 +124,11 @@ services:
       - SONAR_JDBC_PASSWORD=${SONAR_JDBC_PASSWORD}
     ports:
       - "9000:9000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"  # je vais remplacer ceci plus tard par mon domaine ou sous domaine.
+      - "traefik.http.routers.sonarqube.entrypoints=websecure"
+      - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
     networks:
       - tiptop-network
 

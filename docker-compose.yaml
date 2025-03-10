@@ -104,7 +104,8 @@ services:
 
   # CI/CD
   jenkins:
-    image: jenkins/jenkins:2.426.1-lts-jdk17
+    build: ./infrastructure/ci-cd/jenkins
+    image: tiptop/jenkins-custom:latest
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock

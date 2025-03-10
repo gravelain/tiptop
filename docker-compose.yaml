@@ -115,7 +115,7 @@ services:
       - tiptop-network
 
   sonarqube:
-    image: sonarqube:10.2.1-community
+    image: sonarqube:latest
     depends_on:
       - postgres
     environment:

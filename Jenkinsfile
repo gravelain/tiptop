@@ -41,8 +41,9 @@ pipeline {
                 script {
                     echo '🧪 Exécution des tests Backend (NestJS)...'
                     dir('apps/backend') {
-                        sh 'npx jest'
-                        sh 'npm test'
+                        sh 'npm cache clean --force'
+                        sh 'npm install --save-dev ts-jest'
+                        sh 'npx jest --config=jest.config.js'
                     }
                 }
             }

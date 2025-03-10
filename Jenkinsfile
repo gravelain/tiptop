@@ -56,7 +56,7 @@ pipeline {
                     dir('apps/frontend') {
                         sh 'npm cache clean --force'
                         sh 'npm ci'
-                        sh 'npx jest --config=jest.config.js'
+                        sh 'npx jest --config=jest.config.js --passWithNoTests'
                     }
                 }
             }

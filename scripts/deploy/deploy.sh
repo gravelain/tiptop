@@ -20,4 +20,4 @@ echo "🔁 Redémarrage des services frontend et backend..."
 docker compose up -d frontend backend
 
 echo "✅ Déploiement terminé avec succès !"
-echo "🌐 Accès à l'application : http://95.111.240.167"
+echo "🌐 Accès à l'application : http://95.111.240.167:3003"

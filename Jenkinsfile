@@ -36,6 +36,14 @@ pipeline {
             }
         }
 
+        stage('Test Docker') {
+            steps {
+                echo '🐳 Vérification de Docker...'
+                sh 'docker version'
+                sh 'docker ps'
+            }
+        }
+
         stage('Test Backend') {
             steps {
                 script {
@@ -65,7 +73,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    echo '🔎 Analyse SonarQube en cours...'
+                    echo '🔎 Analyse SonarQube...'
                     withSonarQubeEnv('SonarQube') {
                         sh '''
                             npx sonar-scanner \
@@ -80,7 +88,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    echo '🔎 Vérification du Quality Gate SonarQube...'
+                    echo '🔎 Vérification du Quality Gate...'
                     timeout(time: 3, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true
                     }
@@ -91,7 +99,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
-                    echo '⚙️ Compilation du Backend (NestJS)...'
+                    echo '⚙️ Compilation du Backend...'
                     dir('apps/backend') {
                         sh 'npm run build'
                     }
@@ -102,7 +110,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    echo '⚙️ Compilation du Frontend (Next.js)...'
+                    echo '⚙️ Compilation du Frontend...'
                     dir('apps/frontend') {
                         sh 'npm run build'
                     }
@@ -114,30 +122,20 @@ pipeline {
             steps {
                 script {
                     echo '🐳 Connexion au registre Docker...'
-                    // Connexion à Docker Hub avec ton nom d'utilisateur Docker
                     withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', 
                                                     usernameVariable: 'DOCKER_USER', 
                                                     passwordVariable: 'DOCKER_PASS')]) {
                         sh """
-                            docker login -u $DOCKER_USER -p $DOCKER_PASS
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         """
                     }
 
-                    echo '🐳 Construction et push de l’image Docker...'
-                    // Construction des images pour le backend et le frontend
+                    echo '🐳 Construction et push des images Docker...'
                     sh """
                         docker build -t thierrytemgoua98/mon-backend apps/backend
                         docker build -t thierrytemgoua98/mon-frontend apps/frontend
-                    """
-
-                    // Tagging des images avec les bons tags
-                    sh """
                         docker tag thierrytemgoua98/mon-backend thierrytemgoua98/mon-backend:latest
                         docker tag thierrytemgoua98/mon-frontend thierrytemgoua98/mon-frontend:latest
-                    """
-
-                    // Push des images vers Docker Hub
-                    sh """
                         docker push thierrytemgoua98/mon-backend:latest
                         docker push thierrytemgoua98/mon-frontend:latest
                     """

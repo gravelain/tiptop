@@ -92,7 +92,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]  # Remplacez ${POSTGRES_USER} par "postgres"
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"] 
       interval: 30s
       retries: 3
       start_period: 10s
@@ -106,6 +106,7 @@ services:
   jenkins:
     build: ./infrastructure/ci-cd/jenkins
     image: tiptop/jenkins-custom:latest
+    user: root
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock

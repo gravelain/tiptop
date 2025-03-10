@@ -28,3 +28,6 @@ __pycache__/
 .DS_Store
 # .gitignore - Ignorer les fichiers locaux
 .env.local
+/backups/
+/*.log
+/infrastructure/ci-cd/jenkins/data/

@@ -80,7 +80,7 @@ services:
     networks:
       - tiptop-network
 
-  # Bases de données
+  # Bases de donnéessssss
 
   postgres:
     image: postgres:15.4-alpine

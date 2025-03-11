@@ -1,5 +1,5 @@
 services:
-  # Reverse Proxy avec Let's Encrypt
+  # Reverse Proxy
   traefik:
     image: traefik:v2.10
     command:
@@ -22,16 +22,16 @@ services:
   backend:
     build: ./apps/backend
     ports:
-    - "5000:5000"
+      - "5000:5000"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    labels:
-      - "traefik.http.routers.backend.rule=Host(`api.tiptop.com`)"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
     depends_on:
       postgres:
         condition: service_healthy
+    labels:
+      - "traefik.http.routers.backend.rule=Host(`api.tiptop.com`)"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
     networks:
       - tiptop-network
 
@@ -39,14 +39,14 @@ services:
   frontend:
     build: ./apps/frontend
     ports:
-    - "3003:3000" 
+      - "3003:3000"
     labels:
       - "traefik.http.routers.frontend.rule=Host(`tiptop.com`)"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
     networks:
       - tiptop-network
 
-  # Monitoring avec Loki et Alertmanager
+  # Monitoring
   grafana:
     image: grafana/grafana-oss:9.5.6
     ports:
@@ -59,7 +59,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.47.0
     ports:
-    - "9090:9090"
+      - "9090:9090"
     volumes:
       - ./infrastructure/monitoring/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
@@ -80,25 +80,37 @@ services:
     networks:
       - tiptop-network
 
-  # Bases de données
 
+  # Base de données principale
   postgres:
-    image: postgres:15.4-alpine
+    image: postgres:14
     ports:
       - "5434:5432"
     env_file: .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"] 
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 30s
       retries: 3
       start_period: 10s
       timeout: 5s
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tiptop-network
+
+  # Base de données dédiée pour SonarQube
+  postgres-sonar:
+    image: postgres:14
+    container_name: postgres-sonar
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_USER: ${SONAR_JDBC_USERNAME}
+      POSTGRES_PASSWORD: ${SONAR_JDBC_PASSWORD}
+    volumes:
+      - sonar_db_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
 
@@ -115,19 +127,22 @@ services:
     networks:
       - tiptop-network
 
+  # SonarQube
   sonarqube:
     image: sonarqube:latest
     depends_on:
-      - postgres
+      - postgres-sonar
+    env_file:
+      - .env
     environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
-      - SONAR_JDBC_USERNAME=${SONAR_JDBC_USERNAME}
-      - SONAR_JDBC_PASSWORD=${SONAR_JDBC_PASSWORD}
+      SONAR_JDBC_URL: jdbc:postgresql://postgres-sonar:5432/sonar
+      SONAR_JDBC_USERNAME: ${SONAR_JDBC_USERNAME}
+      SONAR_JDBC_PASSWORD: ${SONAR_JDBC_PASSWORD}
     ports:
       - "9000:9000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"  # je vais remplacer ceci plus tard par mon domaine ou sous domaine.
+      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"
       - "traefik.http.routers.sonarqube.entrypoints=websecure"
       - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
     networks:
@@ -135,6 +150,7 @@ services:
 
 volumes:
   postgres_data:
+  sonar_db_data:
   pgadmin_data:
   jenkins_data:
   prometheus_data:

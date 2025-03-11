@@ -80,6 +80,7 @@ services:
     networks:
       - tiptop-network
 
+
   # Base de données principale
   postgres:
     image: postgres:14

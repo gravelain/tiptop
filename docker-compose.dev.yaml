@@ -35,7 +35,7 @@ services:
       - tiptop-network
 
   postgres:
-    image: postgres:15.4-alpine
+    image: postgres:14
     ports:
       - "5433:5432"
     env_file: .env

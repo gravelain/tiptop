@@ -10,37 +10,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    echo '📥 Clonage du dépôt GitHub...'
-                    checkout scm
-                }
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 script {
                     echo '📦 Installation des dépendances Backend...'
                     dir('apps/backend') {
-                        sh 'npm cache clean --force'
                         sh 'npm ci --omit=dev'
                     }
                     echo '📦 Installation des dépendances Frontend...'
                     dir('apps/frontend') {
-                        sh 'npm cache clean --force'
                         sh 'npm ci --omit=dev'
                     }
                 }
-            }
-        }
-
-        stage('Test Docker') {
-            steps {
-                echo '🐳 Vérification de Docker...'
-                sh 'docker version'
-                sh 'docker ps'
             }
         }
 
@@ -49,8 +30,6 @@ pipeline {
                 script {
                     echo '🧪 Exécution des tests Backend (NestJS)...'
                     dir('apps/backend') {
-                        sh 'npm cache clean --force'
-                        sh 'npm install --save-dev ts-jest'
                         sh 'npx jest --config=jest.config.js'
                     }
                 }
@@ -62,8 +41,6 @@ pipeline {
                 script {
                     echo '🧪 Exécution des tests Frontend (Next.js)...'
                     dir('apps/frontend') {
-                        sh 'npm cache clean --force'
-                        sh 'npm ci'
                         sh 'npx jest --config=jest.config.js --passWithNoTests'
                     }
                 }
@@ -118,37 +95,41 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Build Docker Images') {
             steps {
                 script {
-                    echo '🐳 Connexion au registre Docker...'
+                    echo '🐳 Construction des images Docker...'
+                    sh 'docker build -t thierrytemgoua98/mon-backend apps/backend'
+                    sh 'docker build -t thierrytemgoua98/mon-frontend apps/frontend'
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    echo '🐳 Connexion et push vers Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', 
                                                     usernameVariable: 'DOCKER_USER', 
                                                     passwordVariable: 'DOCKER_PASS')]) {
                         sh """
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker tag thierrytemgoua98/mon-backend thierrytemgoua98/mon-backend:latest
+                            docker tag thierrytemgoua98/mon-frontend thierrytemgoua98/mon-frontend:latest
+                            docker push thierrytemgoua98/mon-backend:latest
+                            docker push thierrytemgoua98/mon-frontend:latest
                         """
                     }
-
-                    echo '🐳 Construction et push des images Docker...'
-                    sh """
-                        docker build -t thierrytemgoua98/mon-backend apps/backend
-                        docker build -t thierrytemgoua98/mon-frontend apps/frontend
-                        docker tag thierrytemgoua98/mon-backend thierrytemgoua98/mon-backend:latest
-                        docker tag thierrytemgoua98/mon-frontend thierrytemgoua98/mon-frontend:latest
-                        docker push thierrytemgoua98/mon-backend:latest
-                        docker push thierrytemgoua98/mon-frontend:latest
-                    """
                 }
             }
         }
 
         stage('Deploy') {
             steps {
+                }
                 script {
                     echo '🚀 Déploiement en cours...'
                     sh './deploy.sh'
-                }
             }
         }
     }

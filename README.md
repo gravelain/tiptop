@@ -112,7 +112,6 @@ tiptop/
 ├── docker-compose.dev.yaml         # Environnement de développement
 ├── docker-compose.preprod.yaml     # Préproduction (staging)
 ├── docker-compose.prod.yaml        # Production (live)
-
 ```
 
 ---

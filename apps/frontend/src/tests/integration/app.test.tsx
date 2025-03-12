@@ -8,7 +8,7 @@ describe('Home Page', () => {
     render(<Home />);
 
     expect(
-      screen.getByText(/Ma page d'accueil actuelle pour un premier test/i)
+      screen.getByText(/Ma page de test/i)
     ).toBeInTheDocument();
   });
 });

@@ -40,6 +40,9 @@ restore:
 docker-clean:
 	docker system prune -af --volumes
 
+docker-cc:
+	docker builder prune
+
 docker-login:
 	echo $$DOCKER_PASS | docker login -u $$DOCKER_USER --password-stdin
 

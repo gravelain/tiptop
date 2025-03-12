@@ -38,11 +38,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             when {
-                anyOf {
-                    branch 'develop'
-                    branch 'preprod'
-                    branch 'prod'
-                }
+                expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 echo '🔎 Analyse SonarQube...'
@@ -58,11 +54,7 @@ pipeline {
 
         stage('Quality Gate') {
             when {
-                anyOf {
-                    branch 'develop'
-                    branch 'preprod'
-                    branch 'prod'
-                }
+                expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
@@ -85,10 +77,7 @@ pipeline {
 
         stage('Build & Push Docker Images') {
             when {
-                anyOf {
-                    branch 'preprod'
-                    branch 'prod'
-                }
+                expression { ['preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials',
@@ -107,10 +96,7 @@ pipeline {
 
         stage('Deploy') {
             when {
-                anyOf {
-                    branch 'preprod'
-                    branch 'prod'
-                }
+                expression { ['preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 echo "🚀 Déploiement sur VPS pour ${BRANCH_NAME}..."

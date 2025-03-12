@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: thierrytemgoua98/mon-backend:latest
+    environment:
+      NODE_ENV: production
+    ports:
+      - "5001:5000"
+    networks:
+      - tiptop-network
+
+  frontend:
+    image: thierrytemgoua98/mon-frontend:latest
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3004:3000"
+    networks:
+      - tiptop-network
+
+networks:
+  tiptop-network:
+    driver: bridge

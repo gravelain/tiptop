@@ -1,6 +1,8 @@
 pipeline {
     agent any
+
     environment {
+        BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://95.111.240.167:9000'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last')
     }
@@ -12,135 +14,124 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                script {
-                    echo '📦 Installation des dépendances Backend...'
-                    dir('apps/backend') {
-                        sh 'npm ci --omit=dev'
-                    }
-                    echo '📦 Installation des dépendances Frontend...'
-                    dir('apps/frontend') {
-                        sh 'npm ci --omit=dev'
-                    }
+                echo "📦 Installation des dépendances pour branche ${BRANCH_NAME}"
+                dir('apps/backend') {
+                    sh 'npm ci --omit=dev'
+                }
+                dir('apps/frontend') {
+                    sh 'npm ci --omit=dev'
                 }
             }
         }
 
-        stage('Test Backend') {
+        stage('Run Tests') {
             steps {
-                script {
-                    echo '🧪 Exécution des tests Backend (NestJS)...'
-                    dir('apps/backend') {
-                        sh 'npx jest --config=jest.config.js'
-                    }
+                echo "🧪 Exécution des tests..."
+                dir('apps/backend') {
+                    sh 'npx jest --config=jest.config.js'
                 }
-            }
-        }
-
-        stage('Test Frontend') {
-            steps {
-                script {
-                    echo '🧪 Exécution des tests Frontend (Next.js)...'
-                    dir('apps/frontend') {
-                        sh 'npx jest --config=jest.config.js --passWithNoTests'
-                    }
+                dir('apps/frontend') {
+                    sh 'npx jest --config=jest.config.js --passWithNoTests'
                 }
             }
         }
 
         stage('SonarQube Analysis') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'preprod'
+                    branch 'prod'
+                }
+            }
             steps {
-                script {
-                    echo '🔎 Analyse SonarQube...'
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            npx sonar-scanner \
-                                -Dsonar.host.url=${SONARQUBE_URL} \
-                                -Dsonar.login=${SONARQUBE_TOKEN}
-                        '''
-                    }
+                echo '🔎 Analyse SonarQube...'
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        npx sonar-scanner \
+                            -Dsonar.host.url=${SONARQUBE_URL} \
+                            -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
                 }
             }
         }
 
         stage('Quality Gate') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'preprod'
+                    branch 'prod'
+                }
+            }
             steps {
-                script {
-                    echo '🔎 Vérification du Quality Gate...'
-                    timeout(time: 3, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
-                    }
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
 
-        stage('Build Backend') {
+        stage('Build Apps') {
             steps {
-                script {
-                    echo '⚙️ Compilation du Backend...'
-                    dir('apps/backend') {
-                        sh 'npm run build'
-                    }
+                echo '⚙️ Compilation backend et frontend...'
+                dir('apps/backend') {
+                    sh 'npm run build'
+                }
+                dir('apps/frontend') {
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                script {
-                    echo '⚙️ Compilation du Frontend...'
-                    dir('apps/frontend') {
-                        sh 'npm run build'
-                    }
+        stage('Build & Push Docker Images') {
+            when {
+                anyOf {
+                    branch 'preprod'
+                    branch 'prod'
                 }
             }
-        }
-
-        stage('Build Docker Images') {
             steps {
-                script {
-                    echo '🐳 Construction des images Docker...'
-                    sh 'docker build -t thierrytemgoua98/mon-backend apps/backend'
-                    sh 'docker build -t thierrytemgoua98/mon-frontend apps/frontend'
-                }
-            }
-        }
-
-        stage('Push Docker Images') {
-            steps {
-                script {
-                    echo '🐳 Connexion et push vers Docker Hub...'
-                    withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', 
-                                                    usernameVariable: 'DOCKER_USER', 
-                                                    passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker tag thierrytemgoua98/mon-backend thierrytemgoua98/mon-backend:latest
-                            docker tag thierrytemgoua98/mon-frontend thierrytemgoua98/mon-frontend:latest
-                            docker push thierrytemgoua98/mon-backend:latest
-                            docker push thierrytemgoua98/mon-frontend:latest
-                        """
-                    }
+                withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials',
+                                                 usernameVariable: 'DOCKER_USER',
+                                                 passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t thierrytemgoua98/mon-backend apps/backend
+                        docker build -t thierrytemgoua98/mon-frontend apps/frontend
+                        docker push thierrytemgoua98/mon-backend
+                        docker push thierrytemgoua98/mon-frontend
+                    '''
                 }
             }
         }
 
         stage('Deploy') {
-            steps {
+            when {
+                anyOf {
+                    branch 'preprod'
+                    branch 'prod'
                 }
-                script {
-                    echo '🚀 Déploiement en cours...'
-                    sh './deploy.sh'
+            }
+            steps {
+                echo "🚀 Déploiement sur VPS pour ${BRANCH_NAME}..."
+                sh './scripts/deploy.sh'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline terminé avec succès !'
-            sh './scripts/backup.sh'
+            script {
+                if (env.BRANCH_NAME == 'prod') {
+                    echo '✅ Pipeline prod terminé avec succès. Lancement backup...'
+                    sh './scripts/backup.sh'
+                } else {
+                    echo "✅ Pipeline terminé sur branche ${BRANCH_NAME}"
+                }
+            }
         }
         failure {
-            echo '❌ Échec du pipeline !'
+            echo "❌ Pipeline échoué sur branche ${BRANCH_NAME}"
         }
     }
 }

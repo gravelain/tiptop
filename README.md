@@ -49,47 +49,70 @@ Le projet est déployé sur un **VPS** avec l'IP [95.111.240.167](http://95.111.
 Voici la structure du projet détaillée :
 
 ```plaintext
-my-project/
-├── backend/                 # Code source du backend (NestJS)
-│   ├── Dockerfile           # Dockerfile pour construire l'image du backend
-│   ├── package.json         # Définition des dépendances et scripts NPM
-│   ├── package-lock.json    # Verrouillage des versions des dépendances
-│   └── src/                 # Code source de l'application NestJS
-│       ├── main.ts          # Point d'entrée de l'application
-│       ├── app.module.ts    # Module principal de l'application
-│       ├── app.controller.ts# Exemple de contrôleur
-│       └── app.service.ts   # Exemple de service
-│       └── ...              # Autres modules, controllers, services, etc.
-├── frontend/                # Code source du frontend (Next.js)
-│   ├── Dockerfile           # Dockerfile pour construire l'image du frontend
-│   ├── package.json         # Dépendances et scripts de l'application Next.js
-│   ├── package-lock.json    # Verrouillage des versions
-│   └── pages/               # Pages de l'application Next.js
-│       ├── index.js         # Page d'accueil
-│       ├── _app.js          # Configuration globale de Next.js
-│       └── ...              # Autres pages et composants
-├── grafana/                 # Configuration et dashboards Grafana
-│   ├── dashboards/          # Fichiers JSON des dashboards personnalisés
-│   └── grafana.ini          # Fichier de configuration de Grafana (optionnel)
-├── jenkins/                 # Configuration de Jenkins pour CI/CD
-│   ├── data/                # Volume de persistance (jobs, plugins, configuration)
-│   └── Jenkinsfile          # Pipeline Jenkins définissant les étapes CI/CD
-├── monitoring/              # Fichiers de configuration pour la surveillance
-│   └── alerting/            # Scripts/fichiers pour la gestion des alertes (optionnel)
-├── prometheus/              # Configuration de Prometheus
-│   └── prometheus.yml       # Fichier principal de configuration de Prometheus
-├── scripts/                 # Scripts utilitaires et de déploiement
-│   ├── deploy.sh            # Script pour déployer l'infrastructure
-│   └── backup.sh            # Script de sauvegarde des données (optionnel)
-├── sonarqube/               # Configuration de SonarQube (personnalisable)
-│   └── sonar.properties     # Fichier de configuration de SonarQube (optionnel)
-├── traefik/                 # Configuration du reverse proxy Traefik
-│   └── traefik.yml          # Fichier de configuration principal de Traefik
-├── docker-compose.yml       # Configuration principale des services Docker (production)
-├── docker-compose.dev.yml   # Configuration spécifique pour l'environnement de développement
-├── docker-compose.preprod.yml # Configuration pour la préproduction
-├── docker-compose.prod.yml  # Configuration pour l'environnement de production
-└── .env.*                   # Fichiers d'environnement (ex: .env, .env.local, .env.production)
+
+# Projet TipTop
+
+## Structure du projet
+
+```
+tiptop/
+├── apps/                            # Applications métiers (monorepo)
+│   ├── backend/                     # Backend NestJS
+│   │   ├── Dockerfile.dev           # Dockerfile pour l'environnement de développement
+│   │   ├── Dockerfile.prod          # Dockerfile pour l'environnement de production
+│   │   ├── .env                     # Variables d'environnement pour le développement
+│   │   ├── .env.preprod             # Variables d'environnement pour la préproduction
+│   │   ├── .env.prod                # Variables d'environnement pour la production
+│   │   ├── package.json             # Dépendances et scripts du backend
+│   │   ├── package-lock.json        # Verrouillage des versions des dépendances
+│   │   └── src/                     # Code source du backend (NestJS)
+│   │       ├── main.ts              # Point d'entrée de l'application
+│   │       ├── app.module.ts        # Module principal de l'application
+│   │       ├── app.controller.ts    # Exemple de contrôleur
+│   │       └── app.service.ts       # Exemple de service
+│   └── frontend/                    # Frontend Next.js (avec SSR)
+│       ├── Dockerfile.dev           # Dockerfile pour l'environnement de développement
+│       ├── Dockerfile.prod          # Dockerfile pour l'environnement de production
+│       ├── nginx.conf               # Configuration Nginx pour SSR
+│       ├── .env                     # Variables d'environnement pour le développement
+│       ├── .env.preprod             # Variables d'environnement pour la préproduction
+│       ├── .env.prod                # Variables d'environnement pour la production
+│       ├── package.json             # Dépendances et scripts du frontend
+│       ├── package-lock.json        # Verrouillage des versions des dépendances
+│       └── pages/                    # Pages du frontend (SSR)
+│           ├── index.js             # Page d'accueil
+│           ├── _app.js              # Configuration globale de l'application
+│           └── ...                  # Autres pages et composants
+├── infrastructure/                 # Infrastructure & outils divers
+│   ├── monitoring/                 # Outils de monitoring (Grafana, Prometheus, Traefik)
+│   │   ├── grafana/                # Dashboards Grafana personnalisés
+│   │   │   ├── dashboards/         # Fichiers de dashboards personnalisés
+│   │   │   └── grafana.ini         # Fichier de configuration Grafana
+│   │   ├── prometheus/             # Configuration Prometheus
+│   │   │   └── prometheus.yml      # Fichier principal de configuration Prometheus
+│   │   └── traefik/                # Configuration de Traefik (Reverse Proxy)
+│   │       └── traefik.yml         # Fichier de configuration de Traefik
+│   ├── ci-cd/                      # CI/CD (Jenkins, SonarQube, etc.)
+│   │   ├── jenkins/                # Configuration Jenkins
+│   │   │   ├── data/               # Volume Jenkins (plugins, jobs, etc.)
+│   │   │   └── Jenkinsfile         # Pipeline de déploiement Jenkins
+│   │   └── sonarqube/              # Configuration SonarQube
+│   │       └── sonar.properties    # Fichier de configuration de SonarQube
+│   └── scripts/                    # Scripts utilitaires (déploiement, backup, etc.)
+│       ├── deploy.sh               # Script de déploiement automatique (Dev/Preprod/Prod)
+│       ├── backup.sh               # Sauvegarde manuelle
+│       └── restore.sh              # Restauration
+├── .scannerwork/                   # Résultats d'analyse Sonar (générés)
+├── .gitignore
+├── .dockerignore
+├── Makefile                        # Commandes raccourcies (`make dev`, `make test`, etc.)
+├── README.md                       # Documentation du projet
+├── sonar-project.properties        # Config SonarScanner CLI
+├── docker-compose.yaml             # Docker Compose principal (base commune)
+├── docker-compose.dev.yaml         # Environnement de développement
+├── docker-compose.preprod.yaml     # Préproduction (staging)
+├── docker-compose.prod.yaml        # Production (live)
+```
 
 ```
 

@@ -22,7 +22,7 @@ services:
   backend:
     build: ./apps/backend
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}

@@ -54,7 +54,7 @@ Voici la structure du projet détaillée :
 
 ## Structure du projet
 
-```
+
 tiptop/
 ├── apps/                            # Applications métiers (monorepo)
 │   ├── backend/                     # Backend NestJS

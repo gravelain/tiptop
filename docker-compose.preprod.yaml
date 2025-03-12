@@ -4,7 +4,7 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - "5001:5000"
+      - "5002:5000"
     networks:
       - tiptop-network
 

@@ -9,7 +9,7 @@ services:
     env_file:
       - .env.local
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - ./apps/backend:/usr/src/app
       - /usr/src/app/node_modules

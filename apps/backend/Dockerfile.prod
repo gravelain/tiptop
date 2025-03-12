@@ -1,16 +1,38 @@
+# Étape 1 : Construction
 FROM node:20-alpine AS build
 
+# Définir le répertoire de travail
 WORKDIR /app
+
+# Copier package.json et package-lock.json
 COPY package*.json ./
+
+# Installer les dépendances nécessaires pour la build
 RUN npm ci
+
+# Copier tout le code source
 COPY . .
+
+# Construire le projet NestJS
 RUN npm run build
 
+# Étape 2 : Image finale de production
 FROM node:20-alpine
+
+# Définir le répertoire de travail
 WORKDIR /app
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package*.json ./
+
+# Copier les fichiers construits depuis l'étape de build
+COPY --from=build /app/dist /app/dist
+
+# Copier package.json et package-lock.json
+COPY --from=build /app/package*.json /app/
+
+# Installer les dépendances de production
 RUN npm ci --omit=dev
 
-EXPOSE 3001
-CMD ["node", "dist/index.js"]
+# Exposer le port pour la production
+EXPOSE 5000
+
+# Démarrer l'application avec une commande spécifique pour la production
+CMD ["npm", "run", "start:prod"]

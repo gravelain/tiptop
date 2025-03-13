@@ -29,8 +29,8 @@ COPY --from=build /app/dist ./dist
 # Copier package.json et package-lock.json pour réinstaller les deps
 COPY --from=build /app/package*.json ./
 
-# Installer uniquement les dépendances de production
-RUN npm ci --omit=dev
+# Installer toutes les dependances
+RUN npm install
 
 # Exposer le port (modifie-le si ton app Nest utilise un port différent)
 EXPOSE 5000

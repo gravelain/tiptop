@@ -16,7 +16,7 @@ pipeline {
             steps {
                 echo "📦 Installation des dépendances backend pour branche ${BRANCH_NAME}"
                 dir('apps/backend') {
-                    sh 'npm ci --omit=dev'
+                    sh 'npm ci'
                 }
             }
         }
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 echo "📦 Installation des dépendances frontend pour branche ${BRANCH_NAME}"
                 dir('apps/frontend') {
-                    sh 'npm ci --omit=dev'
+                    sh 'npm ci'
                 }
             }
         }

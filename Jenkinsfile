@@ -12,24 +12,36 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Install Backend Dependencies') {
             steps {
-                echo "📦 Installation des dépendances pour branche ${BRANCH_NAME}"
+                echo "📦 Installation des dépendances backend pour branche ${BRANCH_NAME}"
                 dir('apps/backend') {
                     sh 'npm ci --omit=dev'
                 }
+            }
+        }
+
+        stage('Install Frontend Dependencies') {
+            steps {
+                echo "📦 Installation des dépendances frontend pour branche ${BRANCH_NAME}"
                 dir('apps/frontend') {
                     sh 'npm ci --omit=dev'
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Backend Tests') {
             steps {
-                echo "🧪 Exécution des tests..."
+                echo "🧪 Exécution des tests backend..."
                 dir('apps/backend') {
                     sh 'npx jest --config=jest.config.js'
                 }
+            }
+        }
+
+        stage('Run Frontend Tests') {
+            steps {
+                echo "🧪 Exécution des tests frontend..."
                 dir('apps/frontend') {
                     sh 'npx jest --config=jest.config.js --passWithNoTests'
                 }
@@ -63,12 +75,18 @@ pipeline {
             }
         }
 
-        stage('Build Apps') {
+        stage('Build Backend') {
             steps {
-                echo '⚙️ Compilation backend et frontend...'
+                echo '⚙️ Compilation du backend...'
                 dir('apps/backend') {
                     sh 'npm run build'
                 }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                echo '⚙️ Compilation du frontend...'
                 dir('apps/frontend') {
                     sh 'npm run build'
                 }

@@ -34,7 +34,7 @@ pipeline {
             steps {
                 echo "🧪 Exécution des tests backend..."
                 dir('apps/backend') {
-                    sh 'npx jest --config=jest.config.js'
+                    sh 'npm run test'
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo "🧪 Exécution des tests frontend..."
                 dir('apps/frontend') {
-                    sh 'npx jest --config=jest.config.js --passWithNoTests'
+                    sh 'npm run test -- --passWithNoTests'
                 }
             }
         }

@@ -89,20 +89,24 @@ pipeline {
             }
         }
 
-        stage('Build & Push Docker Images') {
+        stage('Push Docker Images') {
             when {
                 expression { ['develop','preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials',
-                                                 usernameVariable: 'DOCKER_USER',
-                                                 passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    echo "Connexion Docker avec l'utilisateur $DOCKER_USER..."
                     sh '''
+                        # Se connecter à Docker Hub avec le nom d'utilisateur et le mot de passe
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t thierrytemgoua98/mon-backend apps/backend
-                        docker build -t thierrytemgoua98/mon-frontend apps/frontend
-                        docker push thierrytemgoua98/mon-backend
-                        docker push thierrytemgoua98/mon-frontend
+                        
+                        # Construire les images avec des tags appropriés pour la branche
+                        docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} apps/backend
+                        docker build -t thierrytemgoua98/mon-frontend:${BRANCH_NAME} apps/frontend
+                        
+                        # Pousser les images vers Docker Hub
+                        docker push thierrytemgoua98/mon-backend:${BRANCH_NAME}
+                        docker push thierrytemgoua98/mon-frontend:${BRANCH_NAME}
                     '''
                 }
             }

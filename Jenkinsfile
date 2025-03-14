@@ -14,18 +14,18 @@ pipeline {
     stages {
         stage('Install Backend Dependencies') {
             steps {
-                echo "📦 Installation des dépendances backend"
+                echo "🧹📦 Nettoyage et installation des dépendances backend"
                 dir('apps/backend') {
-                    sh 'npm ci'
+                    sh 'rm -rf node_modules coverage package-lock.json && npm ci'
                 }
             }
         }
 
         stage('Install Frontend Dependencies') {
             steps {
-                echo "📦 Installation des dépendances frontend"
+                echo "🧹📦 Nettoyage et installation des dépendances frontend"
                 dir('apps/frontend') {
-                    sh 'npm ci'
+                    sh 'rm -rf node_modules coverage package-lock.json && npm ci'
                 }
             }
         }

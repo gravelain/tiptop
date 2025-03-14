@@ -91,7 +91,7 @@ pipeline {
 
         stage('Build & Push Docker Images') {
             when {
-                expression { ['preprod', 'prod'].contains(env.BRANCH_NAME) }
+                expression { ['develop','preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials',
@@ -110,11 +110,23 @@ pipeline {
 
         stage('Deploy') {
             when {
-                expression { ['preprod', 'prod'].contains(env.BRANCH_NAME) }
+                expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
-                echo "🚀 Déploiement sur VPS pour ${BRANCH_NAME}..."
-                sh './scripts/deploy.sh'
+                script {
+                    // On choisit le script de déploiement en fonction de la branche
+                    def deployScript = ''
+                    if (env.BRANCH_NAME == 'develop') {
+                        deployScript = './scripts/deploy_develop.sh'
+                    } else if (env.BRANCH_NAME == 'preprod') {
+                        deployScript = './scripts/deploy_preprod.sh'
+                    } else if (env.BRANCH_NAME == 'prod') {
+                        deployScript = './scripts/deploy_prod.sh'
+                    }
+                    
+                    echo "🚀 Déploiement sur VPS pour ${BRANCH_NAME}..."
+                    sh deployScript
+                }
             }
         }
     }

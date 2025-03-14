@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
   test: {
@@ -8,10 +8,19 @@ export default defineConfig({
     setupFiles: ['./src/tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
     coverage: {
-      provider: 'v8', // Utilisation de V8 Coverage de google comme fournisseur de coverage
-      reporter: ['text', 'html'], // Afficher les résultats dans le terminal et générer un rapport HTML
-      include: ['src/**/*.{ts,js,tsx,jsx}'], // Inclure tous les fichiers source
-      exclude: ['**/node_modules/**', '**/dist/**'], // Exclure les fichiers non pertinents comme node_modules et dist
+      provider: 'v8',
+      reportsDirectory: './coverage', // 📁 Emplacement explicite pour Jenkins
+      reporter: ['text', 'html'],     // 🖥️ Affichage terminal + rapport HTML
+      all: true,                      // ✅ Inclure tous les fichiers même non testés
+      include: ['src/**/*.{ts,tsx,js,jsx}'], // ✅ Cible les fichiers sources utiles
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/*.d.ts',
+        '**/tests/**',
+        '**/__mocks__/**',
+        '**/vitest.config.ts',
+      ],
     },
   },
   resolve: {
@@ -19,4 +28,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-});
+})

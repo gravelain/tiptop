@@ -1,24 +1,25 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "ESNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ESNext",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",                         // ✅ Ajouté
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strict": true,                 // Activer le mode strict (recommandé)
-    "noUnusedLocals": true,         // Vérifier les variables inutilisées
-    "noUnusedParameters": true,     // Vérifier les paramètres inutilisés
-    "esModuleInterop": true,        // Compatibilité avec les modules CommonJS
-    "strictNullChecks": true,       // Activer la vérification des nulls
-    "noImplicitAny": true,          // Interdire les types implicites 'any'
-    "lib": ["ES2021", "DOM"],       // Ajouter la compatibilité avec ES2021 et DOM
-    "resolveJsonModule": true       // Permet d'importer des fichiers JSON
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "lib": ["ES2021", "DOM"],
+    "resolveJsonModule": true
   }
 }

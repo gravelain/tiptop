@@ -15,7 +15,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "c8 tsx node_modules/uvu/bin.js src/tests",
     "test:watch": "uvu src/tests --watch --coverage",
-    "coverage": "c8 report --reporter=html --report-dir=coverage"
+    "coverage": "npm run test && c8 report --reporter=html --report-dir=coverage"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",

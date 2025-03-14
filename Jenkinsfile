@@ -55,11 +55,7 @@ pipeline {
             steps {
                 echo '🔎 Analyse SonarQube...'
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        npx sonar-scanner \
-                            -Dsonar.host.url=${SONARQUBE_URL} \
-                            -Dsonar.login=${SONARQUBE_TOKEN}
-                    '''
+                    sh 'npx sonar-scanner'
                 }
             }
         }

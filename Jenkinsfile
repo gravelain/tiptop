@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Install Backend Dependencies') {
             steps {
-                echo "🧹📦 Nettoyage et installation des dépendances backend"
+                echo "Nettoyage et installation des dépendances backend"
                 dir('apps/backend') {
                     sh 'rm -rf node_modules coverage package-lock.json && npm ci'
                 }
@@ -23,7 +23,7 @@ pipeline {
 
         stage('Install Frontend Dependencies') {
             steps {
-                echo "🧹📦 Nettoyage et installation des dépendances frontend"
+                echo "Nettoyage et installation des dépendances frontend"
                 dir('apps/frontend') {
                     sh 'rm -rf node_modules coverage package-lock.json && npm ci'
                 }
@@ -32,7 +32,7 @@ pipeline {
 
         stage('Run Backend Tests + Coverage') {
             steps {
-                echo "🧪 Tests backend avec couverture"
+                echo "Tests backend avec couverture"
                 dir('apps/backend') {
                     sh 'npm run coverage'
                 }
@@ -53,7 +53,7 @@ pipeline {
 
         stage('Run Frontend Tests + Coverage') {
             steps {
-                echo "🧪 Tests frontend avec couverture"
+                echo "Tests frontend avec couverture"
                 dir('apps/frontend') {
                     sh 'npm run coverage'
                 }
@@ -77,7 +77,7 @@ pipeline {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
-                echo '🔎 Analyse SonarQube...'
+                echo 'Analyse SonarQube...'
                 withSonarQubeEnv('SonarQube') {
                     sh 'npx sonar-scanner'
                 }
@@ -97,7 +97,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                echo '⚙️ Compilation du backend...'
+                echo 'Compilation du backend...'
                 dir('apps/backend') {
                     sh 'npm run build'
                 }
@@ -106,7 +106,7 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                echo '⚙️ Compilation du frontend...'
+                echo 'Compilation du frontend...'
                 dir('apps/frontend') {
                     sh 'npm run build'
                 }
@@ -119,7 +119,7 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    echo "🔐 Connexion Docker avec l'utilisateur $DOCKER_USER..."
+                    echo "Connexion Docker avec l'utilisateur $DOCKER_USER..."
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} apps/backend
@@ -146,7 +146,7 @@ pipeline {
                         deployScript = './scripts/deploy_prod.sh'
                     }
 
-                    echo "🚀 Déploiement en cours pour la branche ${BRANCH_NAME}..."
+                    echo "Déploiement en cours pour la branche ${BRANCH_NAME}..."
                     sh deployScript
                 }
             }
@@ -157,15 +157,15 @@ pipeline {
         success {
             script {
                 if (env.BRANCH_NAME == 'prod') {
-                    echo '✅ Pipeline prod terminé avec succès. Lancement backup...'
+                    echo 'Pipeline prod terminé avec succès. Lancement backup...'
                     sh './scripts/backup.sh'
                 } else {
-                    echo "✅ Pipeline terminé avec succès sur branche ${BRANCH_NAME}"
+                    echo "Pipeline terminé avec succès sur branche ${BRANCH_NAME}"
                 }
             }
         }
         failure {
-            echo "❌ Pipeline échoué sur branche ${BRANCH_NAME}"
+            echo "Pipeline échoué sur branche ${BRANCH_NAME}"
         }
     }
 }

@@ -20,7 +20,7 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - "3002:3000"  # Frontend sur port 3002 en préprod
+      - "3002:4200"  # Frontend sur port 3002 en préprod
     networks:
       - tiptop-network
     labels:
@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`frontend.preprod.tiptop.com`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.services.frontend.loadbalancer.server.port=4200"
 
   mysql:
     image: mysql:8

@@ -33,7 +33,7 @@ services:
     environment:
       NODE_ENV: development
     ports:
-      - "3002:3000"  # Frontend sur port 3002 en dev
+      - "3002:4200"  # Frontend sur port 3002 en dev
     volumes:
       - ./apps/frontend:/usr/src/app
       - /usr/src/app/node_modules
@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`frontend.tiptop.com`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.services.frontend.loadbalancer.server.port=4200"
 
   mysql:
     image: mysql:8

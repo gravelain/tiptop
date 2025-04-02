@@ -117,20 +117,19 @@ tiptop/
 ---
 
 
-## Services et ports d’accès
+## Résumé des Ports par Environnement
 
+| **Service**    | **Dev**      | **Preprod**  | **Prod**     |
+|----------------|--------------|--------------|--------------|
+| **Traefik**    | 80, 443      | 80, 443      | 80, 443      |
+| **MySQL**      | 3307:3306    | 3308:3306    | 3308:3306    |
+| **PostgreSQL** | 5434:5432    | 5435:5432    | 5436:5432    |
+| **SonarQube**  | 9001:9000    | 9001:9000    | 9001:9000    |
+| **Prometheus** | 9091:9090    | 9091:9090    | 9091:9090    |
+| **Grafana**    | 3001:3000    | 3002:3000    | 3003:3000    |
+| **Backend**    | 5001:5000    | 5002:5000    | 5003:5000    |
+| **Frontend**   | 3001:3000    | 3002:3000    | 3003:3000    |
 
-| Service               | Conteneur         | Port Local | Port VPS (Accès Public) | Description                      |
-|-----------------------|-------------------|------------|-------------------------|----------------------------------|
-| **Frontend (Angular)** | frontend          | 3000       | 95.111.240.167:3000      | Interface utilisateur           |
-| **Backend (php symfony)**   | backend           | 4000       | 95.111.240.167:4000      | API RESTful du backend          |
-| **Base de Données (MySQL)** | db_mysql        | 3306       | 95.111.240.167:3306      | Base de données MySQL pour l'application |
-| **SonarQube**          | sonarqube         | 9000       | 95.111.240.167:9000      | Analyse de code et qualité du projet |
-| **Base de Données (PostgreSQL pour SonarQube)** | db_postgresql  | 5432       | 95.111.240.167:5432      | Base de données PostgreSQL pour SonarQube |
-| **Prometheus**         | prometheus        | 9090       | 95.111.240.167:9090      | Collecte des métriques          |
-| **Grafana**            | grafana           | 3001       | 95.111.240.167:3001      | Visualisation des métriques     |
-| **Jenkins**            | jenkins           | 8080, 50000| 95.111.240.167:8080      | CI/CD et gestion des pipelines  |
-| **Traefik**            | traefik           | 80         | 95.111.240.167:80        | Proxy inverse et Load Balancer  |
 
 ## Configuration de l’environnement
 

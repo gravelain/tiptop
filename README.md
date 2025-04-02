@@ -56,8 +56,8 @@ Voici la structure du projet détaillée :
 
 
 tiptop/
-├── apps/                            # Applications métiers (monorepo)
-│   ├── backend/                     # Backend NestJS
+├── apps/                            # Applications métiers (mon_repo)
+│   ├── backend/                     # Backend php symfony
 │   │   ├── Dockerfile.dev           # Dockerfile pour l'environnement de développement
 │   │   ├── Dockerfile.prod          # Dockerfile pour l'environnement de production
 │   │   ├── .env                     # Variables d'environnement pour le développement
@@ -65,12 +65,12 @@ tiptop/
 │   │   ├── .env.prod                # Variables d'environnement pour la production
 │   │   ├── package.json             # Dépendances et scripts du backend
 │   │   ├── package-lock.json        # Verrouillage des versions des dépendances
-│   │   └── src/                     # Code source du backend (NestJS)
+│   │   └── src/                     # Code source du backend (php symfony)
 │   │       ├── main.ts              # Point d'entrée de l'application
 │   │       ├── app.module.ts        # Module principal de l'application
 │   │       ├── app.controller.ts    # Exemple de contrôleur
 │   │       └── app.service.ts       # Exemple de service
-│   └── frontend/                    # Frontend Next.js (avec SSR)
+│   └── frontend/                    # Frontend Angular (avec SSR)
 │       ├── Dockerfile.dev           # Dockerfile pour l'environnement de développement
 │       ├── Dockerfile.prod          # Dockerfile pour l'environnement de production
 │       ├── nginx.conf               # Configuration Nginx pour SSR

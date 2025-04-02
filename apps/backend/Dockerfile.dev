@@ -29,6 +29,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Copier composer.json depuis apps/backend vers le conteneur
 COPY apps/backend/composer.json /var/www/html/composer.json
+COPY apps/backend/composer.lock /var/www/html/composer.lock
 
 # Copier tout le reste du projet (y compris le fichier .env) vers le conteneur
 COPY . /var/www/html/

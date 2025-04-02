@@ -16,5 +16,8 @@ COPY . .
 # Activer les volumes pour éviter la perte des modules node_modules
 VOLUME [ "/app/node_modules" ]
 
+# Exposer le port par défaut d'Angular (4200)
+EXPOSE 4200
+
 # Lancer l’application en mode développement
 CMD ["npm", "start"]

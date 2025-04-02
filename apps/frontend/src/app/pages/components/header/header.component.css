@@ -1,0 +1,31 @@
+.hidden {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    nav {
+      display: flex !important;
+    }
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  nav {
+    margin: 0 auto;
+  }
+  
+  nav a {
+    text-align: center;
+  }
+  
+  /* Style for active link */
+  .active-link {
+    color: #388E3C; /* Met la couleur que tu souhaites pour le lien actif */
+    font-weight: bold; /* Tu peux également ajouter du gras pour mieux distinguer le lien actif */
+  }
+  
+  

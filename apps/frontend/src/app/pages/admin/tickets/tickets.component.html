@@ -1,0 +1,101 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="bg-white p-4 rounded-lg shadow-lg border border-gray-200 mb-8">
+    <h1 class="text-3xl font-bold text-[#388E3C]">Tickets</h1>
+  </div>
+
+  <!-- Message d'information -->
+  <div *ngIf="message" class="mb-4 p-4 rounded-lg" [ngClass]="{'bg-green-200 text-green-800': messageType === 'success', 'bg-red-200 text-red-800': messageType === 'error'}">
+    {{ message }}
+  </div>
+
+  <!-- Champ de recherche -->
+  <div class="search-bar mb-4">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Rechercher un ticket par code" class="border p-2 rounded">
+    <button (click)="searchTicketByCode()" class="bg-green-600 text-white p-2 rounded ml-2">Rechercher</button>
+  </div>
+
+  <!-- Bouton pour valider les tickets sélectionnés -->
+  <div class="mt-4" *ngIf="anyTicketSelected() && userRole === 'C'">
+    <button 
+      class="bg-[#388E3C] text-white px-4 py-2 rounded hover:bg-green-600"
+      (click)="validateSelectedTickets()"
+    >
+      Valider les tickets sélectionnés
+    </button>
+  </div>
+
+  <!-- Tableau des tickets -->
+  <div class="overflow-x-auto">
+    <table class="table-auto w-full mb-4 border-collapse">
+      <!-- En-tête de tableau -->
+      <thead>
+        <tr>
+          <th *ngIf="userRole === 'C'" class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Sélectionner</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Numéro Ticket</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Nom du Lot</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Utilisateur</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Téléphone</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Statut</th>
+          <th class="px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Ligne de tableau pour chaque ticket -->
+        <tr *ngFor="let ticket of displayedTickets">
+          <td *ngIf="userRole === 'C'" class="border px-4 py-2 text-center">
+            <input type="checkbox" [(ngModel)]="ticket.selected">
+          </td>
+          <td class="border px-4 py-2 text-center">{{ ticket.code }}</td>
+          <td class="border px-4 py-2 text-center">{{ ticket.lot.name }}</td>
+          <td class="border px-4 py-2 text-center">{{ ticket.user?.firstName || 'Non assigné' }}</td>
+          <td class="border px-4 py-2 text-center">{{ ticket.user?.phone || 'Non assigné' }}</td>
+          <td class="border px-4 py-2 text-center">{{ ticket.is_claimed ? 'Validé' : 'Non Validé' }}</td>
+          <td class="border px-4 py-2 text-center">
+            <div class="flex justify-center space-x-2">
+              <button (click)="printTicket(ticket)" class="bg-[#D9EAD3] text-black font-bold py-1 px-3 rounded-lg hover:bg-[#388E3C] focus:outline-none focus:ring-2 focus:ring-[#388E3C] focus:ring-opacity-50 shadow-md">
+                Imprimer
+              </button>
+              <button (click)="exportTicket(ticket)" class="border-2 border-[#D9EAD3] text-[#000000] font-bold py-1 px-3 rounded-lg hover:bg-[#D9EAD3] focus:outline-none focus:ring-2 focus:ring-[#388E3C] focus:ring-opacity-50 shadow-md">
+                Exporter
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination et options d'éléments par page -->
+  <div class="flex justify-between items-center">
+    <div>
+      <label for="itemsPerPage" class="mr-2">Items par page:</label>
+      <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (ngModelChange)="onItemsPerPageChange()" class="p-2 border border-gray-300 rounded">
+        <option *ngFor="let option of [10, 30, 50, 100]" [value]="option">{{ option }}</option>
+      </select>
+    </div>
+
+    <!-- Navigation de la pagination -->
+    <ul class="flex">
+      <li *ngIf="currentPage > 1" class="mx-1">
+        <button (click)="goToPage(1)" class="px-3 py-2 border rounded-lg">&laquo;</button>
+      </li>
+      <li *ngIf="currentPage > 1" class="mx-1">
+        <button (click)="goToPage(currentPage - 1)" class="px-3 py-2 border rounded-lg">&lt;</button>
+      </li>
+      <li *ngFor="let page of pages" class="mx-1">
+        <button (click)="goToPage(page)" 
+                class="px-3 py-2 border rounded-lg"
+                [class.bg-[#388E3C]]="page === currentPage"
+                [class.text-white]="page === currentPage">
+          {{ page }}
+        </button>
+      </li>
+      <li *ngIf="currentPage < totalPages" class="mx-1">
+        <button (click)="goToPage(currentPage + 1)" class="px-3 py-2 border rounded-lg">&gt;</button>
+      </li>
+      <li *ngIf="currentPage < totalPages" class="mx-1">
+        <button (click)="goToPage(totalPages)" class="px-3 py-2 border rounded-lg">&raquo;</button>
+      </li>
+    </ul>
+  </div>
+</div>

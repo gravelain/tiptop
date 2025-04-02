@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /login/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://dsp5-archi-o22a-4-5-g6.fr/sitemap.xml

@@ -1,0 +1,47 @@
+<ng-container *ngIf="isLoggedIn">
+  <div class="mt-24"> <!-- Ajoutez une marge supérieure de 6 unités de tailwind -->
+    <app-user-profile-header></app-user-profile-header>
+  </div>
+</ng-container>
+
+<div class="container mx-auto p-6 mt-16">
+  <h1 class="text-2xl font-bold mb-4 text-center">Contactez-nous</h1>
+  <form (submit)="sendEmail($event)" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    
+    <!-- Champ Nom -->
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+        Votre Nom
+      </label>
+      <input [(ngModel)]="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Votre nom" required>
+    </div>
+    
+    <!-- Champ Email -->
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+        Votre Email
+      </label>
+      <input [(ngModel)]="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="Votre email" required>
+    </div>
+    
+    <!-- Champ Message -->
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+        Votre Message
+      </label>
+      <textarea [(ngModel)]="message" name="message" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" placeholder="Votre message" rows="5" required></textarea>
+    </div>
+    
+    <!-- Bouton Envoyer -->
+    <div class="flex items-center justify-center">
+      <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        Envoyer
+      </button>
+    </div>
+  </form>
+
+  <!-- Message de confirmation -->
+  <div *ngIf="confirmationMessage" class="text-green-500 text-center mt-4">
+    {{ confirmationMessage }}
+  </div>
+</div>

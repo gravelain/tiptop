@@ -1,0 +1,78 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white p-4 rounded-lg shadow-lg border border-gray-200 mb-8">
+      <h1 class="text-3xl font-bold text-[#388E3C]">Mon Profil</h1>
+    </div>
+  
+    <!-- Notification Message -->
+    <div *ngIf="showNotification" class="mb-4">
+      <div [ngClass]="{'bg-green-100 border-green-400 text-green-700': notificationType === 'success', 'bg-red-100 border-red-400 text-red-700': notificationType === 'error'}" class="border px-4 py-3 rounded relative">
+        <span class="block sm:inline">{{ notificationMessage }}</span>
+      </div>
+    </div>
+  
+    <form (ngSubmit)="updateProfile()" class="bg-white p-6 rounded-lg shadow-md">
+      <div class="mb-4">
+        <label for="firstName" class="block text-gray-700 font-semibold mb-2">Prénom</label>
+        <input
+          type="text"
+          id="firstName"
+          [(ngModel)]="user.firstName"
+          name="firstName"
+          class="w-full border border-gray-300 px-3 py-2 rounded-lg"
+          required
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 font-semibold mb-2">Nom</label>
+        <input
+          type="text"
+          id="name"
+          [(ngModel)]="user.name"
+          name="name"
+          class="w-full border border-gray-300 px-3 py-2 rounded-lg"
+          required
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="user.email"
+          name="email"
+          class="w-full border border-gray-300 px-3 py-2 rounded-lg bg-gray-100"
+          disabled
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label for="phone" class="block text-gray-700 font-semibold mb-2">Téléphone</label>
+        <input
+          type="text"
+          id="phone"
+          [(ngModel)]="user.phone"
+          name="phone"
+          class="w-full border border-gray-300 px-3 py-2 rounded-lg"
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label for="Rle" class="block text-gray-700 font-semibold mb-2">Rôle</label>
+        <input
+          type="text"
+          id="Rle"
+          [(ngModel)]="user.Rle"
+          name="Rle"
+          class="w-full border border-gray-300 px-3 py-2 rounded-lg bg-gray-100"
+          disabled
+        />
+      </div>
+  
+      <button type="submit" class="bg-[#388E3C] text-white px-4 py-2 rounded hover:bg-green-600">
+        Mettre à jour
+      </button>
+    </form>
+  </div>
+  

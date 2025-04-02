@@ -1,0 +1,74 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#388E3C] mb-4">Envoyer une Newsletter</h1>
+
+    <!-- Formulaire pour l'envoi de la newsletter -->
+    <form (submit)="sendNewsletter($event)" enctype="multipart/form-data" class="space-y-6">
+        <!-- Contenu de l'email (type WYSIWYG) -->
+        <div>
+            <label for="emailBody" class="block mb-2 text-lg font-semibold text-gray-700">Contenu de l'email :</label>
+            <div class="border border-gray-300 rounded-lg shadow-sm">
+                <div class="flex items-center bg-gray-100 px-3 py-2 rounded-t-lg">
+                    <button type="button" class="text-gray-500 hover:text-gray-700 mx-2"><i class="fas fa-bold"></i></button>
+                    <button type="button" class="text-gray-500 hover:text-gray-700 mx-2"><i class="fas fa-italic"></i></button>
+                    <button type="button" class="text-gray-500 hover:text-gray-700 mx-2"><i class="fas fa-link"></i></button>
+                    <button type="button" class="text-gray-500 hover:text-gray-700 mx-2"><i class="fas fa-underline"></i></button>
+                </div>
+                <textarea id="emailBody" [(ngModel)]="emailBody" name="emailBody" class="w-full p-4 border-none focus:outline-none focus:ring-2 focus:ring-[#388E3C] rounded-b-lg" placeholder="Entrez le contenu de l'email ici" rows="6"></textarea>
+            </div>
+        </div>
+
+        <!-- Sélection de fichier pour pièce jointe -->
+        <div>
+            <label for="attachment" class="block mb-2 text-lg font-semibold text-gray-700">Joindre un fichier (optionnel) :</label>
+            <div class="flex items-center space-x-4">
+                <input type="file" id="attachment" name="attachment" (change)="onFileSelected($event)" class="hidden" #fileInput>
+                <button type="button" (click)="fileInput.click()" class="bg-gray-200 text-gray-600 py-2 px-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-[#388E3C]">Choisir un fichier</button>
+                <span *ngIf="attachmentName" class="text-gray-600">{{ attachmentName }}</span>
+            </div>
+        </div>
+
+        <!-- Bouton d'envoi -->
+        <button type="submit" class="bg-[#388E3C] text-white py-3 px-6 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-[#388E3C]">Envoyer la Newsletter</button>
+
+        <!-- Message de confirmation -->
+        <div *ngIf="confirmationMessage" class="mt-6 p-4 rounded-lg" [ngClass]="{'bg-green-100 text-green-700': success, 'bg-red-100 text-red-700': !success}">
+            {{ confirmationMessage }}
+        </div>
+    </form>
+
+    <!-- Liste des abonnés et pagination -->
+    <div class="overflow-x-auto mt-8">
+        <table class="table-auto w-full mb-4 border-collapse">
+            <thead>
+                <tr>
+                    <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Email</th>
+                    <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Date d'abonnement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let subscriber of subscribers">
+                    <td class="border px-2 sm:px-4 py-2 text-center">{{ subscriber.email }}</td>
+                    <td class="border px-2 sm:px-4 py-2 text-center">{{ subscriber.dateSubscribed | date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6">
+        <div>
+            <label for="itemsPerPage" class="mr-2">Éléments par page :</label>
+            <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (ngModelChange)="calculatePagination()" class="p-2 border rounded-lg">
+                <option *ngFor="let option of [5, 10, 20, 50]" [value]="option">{{ option }}</option>
+            </select>
+        </div>
+
+        <ul class="flex flex-wrap justify-center">
+            <li *ngFor="let page of pages" class="mx-1">
+                <button (click)="goToPage(page)" class="px-2 py-2 border rounded-lg" [class.bg-[#388E3C]]="page === currentPage" [class.text-white]="page === currentPage">
+                    {{ page }}
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>

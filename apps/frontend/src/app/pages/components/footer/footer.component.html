@@ -1,0 +1,74 @@
+<footer class="bg-white py-6 border-t border-gray-200">
+  <div class="container mx-auto px-4">
+    <!-- Logo -->
+    <div class="mb-6">
+      <img src="assets/images/logo.webp" alt="Logo" class="h-24 md:h-32 lg:h-40" loading="lazy">
+      
+    </div>
+    <!-- Contenu -->
+    <div class="flex flex-col space-y-6 md:flex-row md:space-y-0 md:space-x-6 md:justify-between">
+      <!-- Liens TheTipTop -->
+      <div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+        <p class="text-gray-800 text-lg font-bold mb-2">TheTipTop</p>
+        <div class="flex flex-col space-y-2">
+          <a routerLink="/home" routerLinkActive="active-link" class="text-gray-600 text-sm hover:text-green-500 cursor-pointer">Accueil</a>
+          <a routerLink='/lots'  routerLinkActive="active-link" class="text-gray-600 text-sm hover:text-green-500 cursor-pointer">Lots à Gagner</a>
+          <a routerLink='/jeux' routerLinkActive="active-link" class="text-gray-600 text-sm hover:text-green-500 cursor-pointer">Jeux</a>
+          <a routerLink='/contact' routerLinkActive="active-link" class="text-gray-600 text-sm hover:text-green-500 cursor-pointer">Contact</a>
+        </div>
+      </div>
+      <!-- Coordonnées -->
+      <div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+        <p class="text-gray-800 text-lg font-bold mb-2">Coordonnées</p>
+        <div class="flex flex-col space-y-2">
+          <p class="text-gray-600 text-sm">18 rue Léon Frot, 75011 Paris</p>
+          <p class="text-gray-600 text-sm">+33 764232095</p>
+          <a href="mailto:furiousduck6@gmail.com" class="text-gray-600 text-sm hover:text-green-500">{{'thetiptop@gmail.com'}}</a>
+        </div>
+      </div>
+      <!-- Réseaux Sociaux -->
+      <div class="flex flex-col items-center md:items-start">
+        <p class="text-gray-800 text-lg font-bold mb-2">À Propos de Nous</p>
+        <div class="flex flex-col space-y-2">
+          <p class="text-gray-600 text-sm">Nos Produits</p>
+          <p class="text-gray-600 text-sm">Réseaux Sociaux</p>
+     
+          <div class="inline-flex space-x-4">
+            <a href="https://www.facebook.com/profile.php?id=61564176131592" class="text-gray-600 text-2xl hover:text-green-500" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-facebook"></i>
+            </a>
+            
+            <a href="https://www.instagram.com/the_tip_top6?igsh=bngzYWV6M2pjbnM5&utm_source=qr" class="text-gray-600 text-2xl hover:text-green-500" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+          
+          
+        </div>
+      </div>
+    </div>
+    <!-- Section Newsletter -->
+    <div class="mt-6 text-center">
+      <!-- Notification -->
+      <div *ngIf="showNotification" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-11/12 md:w-1/3 z-50">
+        <div [ngClass]="{'bg-green-100 border-green-500 text-green-700': notificationType === 'success', 'bg-red-100 border-red-500 text-red-700': notificationType === 'error'}"
+            class="border-l-4 p-4 rounded-md shadow-md">
+          <p class="font-bold">{{ notificationType === 'success' ? 'Succès' : 'Erreur' }}</p>
+          <p>{{ notificationMessage }}</p>
+        </div>
+      </div>
+
+      <p class="text-gray-800 text-lg font-bold mb-4">Inscrivez-vous à notre Newsletter</p>
+      <form (ngSubmit)="subscribeToNewsletter()" class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <input [(ngModel)]="email" type="email" name="email" placeholder="Entrez votre email" class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:border-green-500" required>
+        <button type="submit" class="bg-[#388E3C] text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">S'inscrire</button>
+      </form>
+    </div>    
+    <!-- Liens de Bas de Page -->
+    <div class="text-center mt-6">
+      <a href="/cgu" class="text-gray-600 text-xs hover:text-green-500">CGU</a>
+      <span class="mx-2 text-gray-600">|</span>
+      <a href="/legacy" class="text-gray-600 text-xs hover:text-green-500">MENTIONS LÉGALES</a>
+    </div>
+  </div>
+</footer>

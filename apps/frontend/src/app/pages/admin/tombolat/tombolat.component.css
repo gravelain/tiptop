@@ -1,0 +1,19 @@
+
+  canvas {
+    border: 2px solid #388E3C;
+    border-radius: 50%;
+  }
+  
+  button {
+    margin-top: 20px;
+    background-color: #388E3C;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #2C7030;
+  }
+  

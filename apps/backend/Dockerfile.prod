@@ -1,39 +1,40 @@
-# 🛠 Étape 1 : Construction de l'application
-FROM node:20-alpine AS build
+# 🐘 Utiliser une image PHP avec FPM pour Symfony
+FROM php:8.2-fpm AS prod
 
 # Définir le répertoire de travail
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Copier uniquement les fichiers nécessaires pour l'installation des dépendances
-COPY package*.json ./
+# Installer les dépendances système et les extensions PHP requises par Symfony
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libpq-dev \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    curl \
+    libcurl4-openssl-dev \
+    && docker-php-ext-install \
+    pdo_mysql \
+    zip \
+    intl \
+    opcache
 
-# Installer les dépendances (inclut devDeps car on est encore en build)
-RUN npm ci
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Copier le reste du code source
+# Copier le projet
 COPY . .
 
-# Compiler le projet NestJS
-RUN npm run build
+# Installer les dépendances sans les dev dependencies (optimisé pour production)
+RUN composer install --no-dev --optimize-autoloader --no-progress --no-interaction
 
-
-# 🧼 Étape 2 : Image finale optimisée pour la production
-FROM node:20-alpine
-
-# Définir le répertoire de travail
-WORKDIR /app
-
-# Copier les fichiers construits depuis l'étape de build
-COPY --from=build /app/dist ./dist
-
-# Copier package.json et package-lock.json pour réinstaller les deps
-COPY --from=build /app/package*.json ./
-
-# Installer uniquement les dépendances de production
-RUN npm ci --omit=dev
-
-# Exposer le port (modifie-le si ton app Nest utilise un port différent)
+# Exposer le port pour PHP-FPM
 EXPOSE 5000
 
-# Commande de démarrage (via script dans package.json)
-CMD ["npm", "run", "start:prod"]
+# Variables d'environnement pour la production (si nécessaire)
+ENV SYMFONY_ENV=prod
+
+# Commande pour démarrer PHP-FPM
+CMD ["php-fpm"]

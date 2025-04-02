@@ -1,0 +1,35 @@
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem; /* text-sm equivalent */
+    padding: 0.5rem 1rem; /* Adjust padding if needed */
+    white-space: nowrap; /* Ensure text stays on one line */
+    width: 100%; /* Make sure buttons take full width */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+  
+  .facebook-btn {
+    background-color: #1877f2; /* Facebook blue */
+    color: white;
+    margin-right: 0; /* Remove right margin for equal spacing */
+    margin-bottom: 0.5rem; /* Add space below the button */
+  }
+  
+  .google-btn {
+    background-color: white;
+    color: #5f6368; /* Google text color */
+    border: 1px solid #dadce0;
+    margin-left: 0; /* Remove left margin for equal spacing */
+  }
+  
+  .social-btn i {
+    margin-right: 0.5rem; /* Space between icon and text */
+  }
+    
+  @media (min-width: 640px) {
+    .facebook-btn, .google-btn {
+      margin-bottom: 0; /* Remove bottom margin on larger screens */
+    }
+  }
+  

@@ -1,0 +1,39 @@
+<section id="lots" class="max-w-screen-xl p-5 mx-auto dark:bg-gray-100 dark:text-gray-800 mt-12 secto">
+    <h2 class="text-xl md:text-2xl font-bold text-green-800 mt-4 text-center">Lots à gagner</h2>
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-2 mt-8">
+      
+      <div *ngFor="let lot of lots" class="relative mx-auto flex flex-col bg-white bg-opacity-20 md:max-w-screen-lg">
+        <div class="relative flex flex-col md:flex-row items-center justify-between overflow-hidden">
+          
+          <!-- Section Texte à gauche -->
+          <div class="bg-green-600 p-8 text-white w-full md:w-1/2 h-full flex flex-col justify-center relative z-10">
+            <p class="mb-4 font-serif font-light">{{ lot.title }}</p>
+            <h2 class="font-serif text-4xl font-bold">{{ lot.description }}</h2>
+            <button (click)="toggleDetails(lot)" class="mt-6 inline-block rounded-full border-2 px-10 py-3 font-semibold border-white hover:bg-white hover:text-green-600 transition-all duration-300">
+              {{ lot.isExpanded ? 'Voir Moins' : 'Voir Plus' }}
+            </button>
+          </div>
+  
+          <!-- Section Image à droite -->
+          <div class="w-full md:w-1/2 h-96 relative">
+            <img [src]="lot.image" alt="{{ lot.title }}" class="h-full w-full object-cover rounded-md border-4 border-green-600" loading="lazy">
+          </div>
+        </div>
+  
+        <!-- Texte caché/déployé pour plus de détails -->
+        <div *ngIf="lot.isExpanded" class="p-6 bg-gray-100">
+          <h3 class="font-bold text-lg mb-2">Détails supplémentaires</h3>
+          <p>{{ lot.extraDetails }}</p>
+          <ul class="list-disc list-inside mt-4">
+            <li>{{ lot.detail1 }}</li>
+            <li>{{ lot.detail2 }}</li>
+            <li>{{ lot.detail3 }}</li>
+            <li>{{ lot.detail4 }}</li>
+            <li>{{ lot.detail5 }}</li>
+          </ul>
+        </div>
+      </div>
+  
+    </div>
+  </section>
+  

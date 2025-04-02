@@ -1,0 +1,105 @@
+<header class="bg-white shadow w-full fixed top-0 left-0 z-50">
+  <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <img src="assets/images/logo.webp" alt="Logo" class="h-32 md:h-24 lg:h-40" loading="lazy">
+
+    </div>
+    <!-- Navigation Links -->
+    <nav [ngClass]="{'hidden': isMobile, 'md:flex space-x-4 mx-auto': true}">
+      <a routerLink="/home" routerLinkActive="active-link" class="text-sm md:text-base text-gray-800 hover:text-[#388E3C]">Accueil</a>
+      <a routerLink="/lots" routerLinkActive="active-link" class="text-sm md:text-base text-gray-800 hover:text-[#388E3C]">Lots à Gagner</a>
+      <a routerLink="/jeux" routerLinkActive="active-link" class="text-sm md:text-base text-gray-800 hover:text-[#388E3C]">Jeux</a>
+      <a routerLink="/contact" routerLinkActive="active-link" class="text-sm md:text-base text-gray-800 hover:text-[#388E3C]">Contactez Nous</a>
+      <a routerLink="/help" routerLinkActive="active-link" class="text-sm md:text-base text-gray-800 hover:text-[#388E3C]">Aide ?</a>
+    </nav>
+    <!-- User Menu / Login Button -->
+    <div [ngClass]="{'hidden': isMobile, 'flex space-x-4': true}" class="relative">
+      <ng-container *ngIf="isLoggedIn; else loginButton">
+        <div class="relative group">
+          <button class="flex items-center space-x-2 bg-white border border-[#388E3C] text-[#388E3C] px-6 py-3 rounded-lg shadow-lg focus:outline-none">
+            <span>{{ firstName }}</span>
+            <svg class="w-5 h-5 transition-transform duration-200 transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <!-- Dropdown Menu -->
+          <div class="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transition-all duration-300 invisible group-hover:visible">
+            <div class="px-4 py-3">
+              <p class="text-sm text-gray-700 font-bold">{{ firstName }}</p>
+              <p class="text-sm text-gray-500">{{ email }}</p>
+            </div>
+            <div class="border-t border-gray-200"></div>
+            <a href="/profil" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#388E3C] hover:text-white">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.28 0 4.15-1.87 4.15-4.15S14.28 3.7 12 3.7s-4.15 1.87-4.15 4.15S9.72 12 12 12z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14.5c-4.1 0-7.45 2.7-7.45 6.05v1.45h14.9v-1.45c0-3.35-3.35-6.05-7.45-6.05z"></path>
+              </svg>
+              Mon Profil
+            </a>
+            <button (click)="logout()" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#388E3C] hover:text-white">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 0v4m0-8V4m-1 8a9 9 0 100-18 9 9 0 000 18z"></path>
+              </svg>
+              Déconnexion
+            </button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #loginButton>
+        <a href="/login" class="bg-[#2B6C2B] text-gray-100 text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-1 md:text-base md:px-4 md:py-2 rounded-full shadow-lg">
+          Se Connecter
+        </a>
+        
+      </ng-template>
+    </div>
+    <!-- Hamburger Menu Button -->
+    <button id="menu-btn" class="block md:hidden focus:outline-none" (click)="toggleMenu()">
+      <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+      </svg>
+    </button>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="menu" class="hidden md:hidden flex-col space-y-4">
+    <a routerLink="/home"  routerLinkActive="active-link"  class="block text-sm text-gray-800 hover:text-[#388E3C] px-4 py-2">Accueil</a>
+    <a routerLink="/lots"  routerLinkActive="active-link" class="block text-sm text-gray-800 hover:text-[#388E3C] px-4 py-2">Lots à Gagner</a>
+    <a routerLink="/jeux"  routerLinkActive="active-link" class="block text-sm text-gray-800 hover:text-[#388E3C] px-4 py-2">Jeux</a>
+    <a routerLink="/contact"  routerLinkActive="active-link" class="block text-sm text-gray-800 hover:text-[#388E3C] px-4 py-2">Contactez Nous</a>
+    <a routerLink="/help"  routerLinkActive="active-link" class="block text-sm text-gray-800 hover:text-[#388E3C] px-4 py-2">Aide ?</a>
+    <ng-container *ngIf="isLoggedIn">
+      <div class="relative group">
+        <button class="flex items-center space-x-2 bg-white border border-[#388E3C] text-[#388E3C] px-4 py-2 w-full text-left">
+          <span>{{ firstName }}</span>
+          <svg class="w-5 h-5 transition-transform duration-200 transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <!-- Dropdown Menu -->
+        <div class="flex flex-col w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10 mt-2">
+          <div class="px-4 py-3">
+            <p class="text-sm text-gray-700 font-bold">{{ firstName }}</p>
+            <p class="text-sm text-gray-500">{{ email }}</p>
+          </div>
+          <div class="border-t border-gray-200"></div>
+          <a href="/profil" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#388E3C] hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.28 0 4.15-1.87 4.15-4.15S14.28 3.7 12 3.7s-4.15 1.87-4.15 4.15S9.72 12 12 12z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14.5c-4.1 0-7.45 2.7-7.45 6.05v1.45h14.9v-1.45c0-3.35-3.35-6.05-7.45-6.05z"></path>
+            </svg>
+            Mon Profil
+          </a>
+          <button (click)="logout()" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#388E3C] hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 0v4m0-8V4m-1 8a9 9 0 100-18 9 9 0 000 18z"></path>
+            </svg>
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loginButton>
+      <a href="/login" class="block bg-[#388E3C] text-white text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-1 rounded-full mx-4 my-2 w-auto">Se Connecter</a>
+    </ng-template>
+  </div>
+</header>

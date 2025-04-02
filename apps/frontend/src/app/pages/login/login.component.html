@@ -1,0 +1,79 @@
+
+
+
+
+<div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+  <div class="bg-white flex flex-col lg:flex-row rounded-lg shadow-lg overflow-hidden max-w-5xl w-full">
+    <div class="lg:w-1/2 bg-cover bg-center" style="background-image: url('/assets/images/background.webp'); min-height: 300px;">
+      <!-- Background Image -->
+    </div>   
+    <div class="lg:w-1/2 p-6 sm:p-8 lg:p-12">
+      <h1 class="text-2xl font-bold mb-4 text-center">{{ isLoginMode ? 'Connexion' : 'Créer son compte sur ThéTipTop' }}</h1>
+
+      <!-- Section pour afficher le message d'erreur -->
+      <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+        <span class="block sm:inline">{{ errorMessage }}</span>
+      </div>
+      <div *ngIf="successMessage" class="bg-green-500 text-white p-4 rounded mb-4">
+        {{ successMessage }}
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-between mb-6 sm:space-x-4">
+        <button class="social-btn facebook-btn flex-1 mb-2 sm:mb-0">
+          <i class="fab fa-facebook-f mr-2"></i>
+          {{ isLoginMode ? 'Se connecter avec Facebook' : "S'inscrire avec Facebook" }}
+        </button>
+        <button class="social-btn google-btn flex-1">
+          <i class="fab fa-google mr-2"></i>
+          {{ isLoginMode ? 'Se connecter avec Google' : "S'inscrire avec Google" }}
+        </button>
+      </div>
+      <div class="flex items-center mb-4">
+        <hr class="flex-grow border-t border-gray-300">
+        <span class="px-3 text-gray-500">Ou</span>
+        <hr class="flex-grow border-t border-gray-300">
+      </div>
+      <div class="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+        <form (submit)="onSubmit($event)">
+          <!-- Champs d'inscription -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4" *ngIf="!isLoginMode">
+            <div>
+              <label class="block text-gray-800 text-sm font-bold mb-2" for="name">Nom</label>
+              <input id="name" [(ngModel)]="name" name="name" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            </div>
+            <div>
+              <label class="block text-gray-800 text-sm font-bold mb-2" for="firstName">Prénom</label>
+              <input id="firstName" [(ngModel)]="firstName" name="firstName" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            </div>
+          </div>
+
+          <!-- Champs communs (Connexion & Inscription) -->
+          <div class="mb-4">
+            <label class="block text-gray-800 text-sm font-bold mb-2" for="email">Adresse Email</label>
+            <input id="email" type="email" [(ngModel)]="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-800 text-sm font-bold mb-2" for="password">Mot de passe</label>
+            <input id="password" type="password" [(ngModel)]="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+            <p class="text-xs text-gray-600 mt-1">Le mot de passe doit contenir au moins 8 caractères, incluant une majuscule, un chiffre, et un caractère spécial, et ne doit pas commencer par un chiffre.</p>
+          </div>
+          <div class="mb-6" *ngIf="!isLoginMode">
+            <label class="block text-gray-800 text-sm font-bold mb-2" for="confirmPassword">Confirmez le mot de passe</label>
+            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+          </div>
+          <div class="flex items-center justify-center">
+            <button type="submit" id="submitButton" class="bg-green-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">{{ isLoginMode ? 'Se connecter' : 'Créer mon compte' }}</button>
+          </div>
+        </form>
+      </div>
+      <p class="text-center text-xs text-gray-600 mb-6">Ce formulaire utilise reCAPTCHA. L'utilisation de cette fonctionnalité est soumise aux <a href="#" class="text-blue-600">Règles de confidentialité</a> et aux <a href="#" class="text-blue-600">Conditions d'utilisation de Google</a>.</p>
+      <p class="text-center text-sm text-gray-700">
+        Vous avez déjà un compte? 
+        <a id="toggleLink" href="javascript:void(0)" class="text-blue-600 font-bold" (click)="toggleForm(!isLoginMode)">
+          {{ isLoginMode ? 'Créer un compte' : 'Se connecter' }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

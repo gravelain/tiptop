@@ -1,0 +1,8 @@
+/* src/app/components/sidebar/sidebar.component.css */
+@media (max-width: 767px) {
+    .w-64 {
+      width: 64px;
+    }
+  }
+  
+  

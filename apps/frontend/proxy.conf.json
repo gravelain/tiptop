@@ -1,0 +1,9 @@
+{
+    "/api": {
+      "target": "https://api.dsp5-archi-o22a-4-5-g6.fr/api",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  

@@ -1,0 +1,18 @@
+:host {
+    display: block;
+    padding-top: 100px; /* Ajustez selon la hauteur de votre header */
+    width: 100%;
+  }
+  
+  .user-profile-container {
+    width: 100%;
+  }
+  
+  .bg-green-200, .bg-white {
+    width: 100%; /* Assurez-vous que les sections prennent toute la largeur */
+  }
+  
+  .max-w-lg {
+    margin: 0 auto; /* Centrez le conteneur des informations */
+  }
+  

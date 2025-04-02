@@ -1,20 +1,46 @@
-# Utilisation de Node.js 20 pour le développement
-FROM node:20-alpine
+# Utiliser une image PHP avec FPM et les extensions nécessaires
+FROM php:8.2-fpm
 
 # Définir le répertoire de travail
-WORKDIR /usr/src/app
+WORKDIR /var/www/html
 
-# Copier package.json et package-lock.json
-COPY package*.json ./
+# Installer les dépendances système et extensions PHP requises par Symfony
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libpq-dev \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    curl \
+    libcurl4-openssl-dev \
+    && docker-php-ext-install \
+    pdo_mysql \
+    zip \
+    intl \
+    opcache \
+    mbstring \
+    xml \
+    curl
 
-# Installer toutes les dépendances (y compris celles de développement)
-RUN npm install
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Copier le code source dans le conteneur
-COPY . .
+# Copier composer.json depuis apps/backend vers le conteneur
+COPY apps/backend/composer.json /var/www/html/composer.json
 
-# Exposer le port que NestJS utilise pour la dev
+# Copier tout le reste du projet (y compris le fichier .env) vers le conteneur
+COPY . /var/www/html/
+
+# Copier le fichier .env dans le conteneur
+COPY .env /var/www/html/.env
+
+# Installer les dépendances
+RUN composer install --prefer-dist --no-progress --no-interaction
+
+# Exposer le port pour PHP-FPM
 EXPOSE 5000
 
-# Démarrer l'application en mode développement
-CMD ["npm", "run", "start:dev"]
+# Commande pour démarrer PHP-FPM
+CMD ["php-fpm"]

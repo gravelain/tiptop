@@ -1,22 +1,30 @@
 services:
   backend:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.dev
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_dev
+      DATABASE_URL: mysql://${MYSQL_USER_dev}:${MYSQL_PASSWORD_dev}@mysql:3306/${MYSQL_DATABASE_dev}
     env_file:
-      - .env.local
+      - .env
     ports:
-      - "5001:5000"
+      - "5001:5000"  # Backend sur port 5001 en dev
     volumes:
-      - ./apps/backend:/usr/src/app
+      - ./apps/backend:/var/www/html  # Monte le répertoire backend dans /var/www/html
       - /usr/src/app/node_modules
+      - ./.env:/var/www/html/.env  # Monte le fichier .env global dans le conteneur
+
     depends_on:
-      - postgres
+      - mysql
     networks:
       - tiptop-network
+    labels:
+      - "traefik.enable=true"  # Activer Traefik pour ce service
+      - "traefik.http.routers.backend.rule=Host(`backend.dev.tiptop.com`)"  # Règle de routage pour le backend
+      - "traefik.http.routers.backend.entrypoints=websecure"  # Utiliser le point d'entrée sécurisé (https)
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"  # Utiliser Let's Encrypt pour les certificats SSL
+      - "traefik.http.services.backend.loadbalancer.server.port=9000"  # PHP-FPM écoute sur le port 9000
 
   frontend:
     build:
@@ -25,7 +33,7 @@ services:
     environment:
       NODE_ENV: development
     ports:
-      - "3000:3000"
+      - "3002:3000"  # Frontend sur port 3002 en dev
     volumes:
       - ./apps/frontend:/usr/src/app
       - /usr/src/app/node_modules
@@ -33,24 +41,38 @@ services:
       - backend
     networks:
       - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.tiptop.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_dev}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_dev}
+    ports:
+      - "3307:3306"  # MySQL sur port 3307 en dev
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - tiptop-network
 
   postgres:
     image: postgres:14
-    ports:
-      - "5433:5432"
-    env_file: .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}_dev
+      POSTGRES_USER: ${POSTGRES_USER_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_dev}
+      POSTGRES_DB: ${POSTGRES_DB_dev}
+    ports:
+      - "5434:5432"  # PostgreSQL sur port 5434 en dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
 
 volumes:
+  mysql_data:
   postgres_data:
-
-networks:
-  tiptop-network:
-    driver: bridge

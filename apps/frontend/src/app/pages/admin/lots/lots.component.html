@@ -1,0 +1,66 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="bg-white p-4 rounded-lg shadow-lg border border-gray-200 mb-8">
+      <h1 class="text-3xl font-bold text-[#388E3C]">Lots</h1>
+  </div>
+  <div class="flex justify-between items-center mb-4">
+      <input 
+      type="text" 
+      placeholder="Rechercher par nom de lot, valeur ou pourcentage..." 
+      [(ngModel)]="searchTerm" 
+      class="w-full sm:w-auto p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#388E3C] mb-4 sm:mb-0"
+      >
+      <button class="bg-[#388E3C] text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-[#388E3C] focus:ring-opacity-50">
+          Ajouter
+      </button>
+  </div>
+
+  <div class="overflow-x-auto">
+      <table class="table-auto w-full mb-4 border-collapse">
+          <thead>
+              <tr>
+                  <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Nom</th>
+                  <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Valeur</th>
+                  <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Pourcentage</th>
+                  <th class="px-2 sm:px-4 py-2 bg-[#D9EAD3] text-[#388E3C] border">Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let lot of filteredLots()">
+                  <td class="border px-2 sm:px-4 py-2 text-center">{{ lot.name }}</td>
+                  <td class="border px-2 sm:px-4 py-2 text-center">{{ lot.value }} €</td>
+                  <td class="border px-2 sm:px-4 py-2 text-center">{{ lot.Pourcentage }}%</td>
+                  <td class="border px-2 sm:px-4 py-2 text-center">
+                      <div class="flex justify-center space-x-2">
+                          <button (click)="printLot(lot)" class="bg-[#D9EAD3] text-black font-bold py-1 px-2 sm:px-3 rounded-lg hover:bg-[#388E3C] focus:outline-none focus:ring-2 focus:ring-[#388E3C] focus:ring-opacity-50 shadow-md">
+                              Imprimer
+                          </button>
+                          <button (click)="exportLot(lot)" class="border-2 border-[#D9EAD3] text-[#000000] font-bold py-1 px-2 sm:px-3 rounded-lg hover:bg-[#D9EAD3] focus:outline-none focus:ring-2 focus:ring-[#388E3C] focus:ring-opacity-50 shadow-md">
+                              Exporter
+                          </button>
+                      </div>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+
+  <div class="flex flex-col sm:flex-row justify-between items-center">
+      <div class="mb-4 sm:mb-0">
+          <label for="itemsPerPage" class="mr-2">Items par page:</label>
+          <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (ngModelChange)="calculatePagination()" class="p-2 border border-gray-300 rounded">
+              <option *ngFor="let option of [5, 10, 20, 50]" [value]="option">{{ option }}</option>
+          </select>
+      </div>
+
+      <ul class="flex flex-wrap justify-center">
+          <li *ngFor="let page of pages" class="mx-1">
+              <button (click)="goToPage(page)" 
+                      class="px-2 sm:px-3 py-2 border rounded-lg"
+                      [class.bg-[#388E3C]]="page === currentPage"
+                      [class.text-white]="page === currentPage">
+                  {{ page }}
+              </button>
+          </li>
+      </ul>
+  </div>
+</div>

@@ -3,20 +3,58 @@ services:
     image: thierrytemgoua98/mon-backend:latest
     environment:
       NODE_ENV: production
+      DATABASE_URL: mysql://${MYSQL_USER_preprod}:${MYSQL_PASSWORD_preprod}@mysql:3306/${MYSQL_DATABASE_preprod}
     ports:
-      - "5002:5000"
+      - "5002:5000"  # Backend sur port 5002 en préprod
     networks:
       - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.preprod.tiptop.com`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=9000"
 
   frontend:
     image: thierrytemgoua98/mon-frontend:latest
     environment:
       NODE_ENV: production
     ports:
-      - "3004:3000"
+      - "3002:3000"  # Frontend sur port 3002 en préprod
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.preprod.tiptop.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_preprod}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_preprod}
+    ports:
+      - "3308:3306"  # MySQL sur port 3308 en préprod
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - tiptop-network
 
-networks:
-  tiptop-network:
-    driver: bridge
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_preprod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_preprod}
+      POSTGRES_DB: ${POSTGRES_DB_preprod}
+    ports:
+      - "5435:5432"  # PostgreSQL sur port 5435 en préprod
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tiptop-network
+
+volumes:
+  mysql_data:
+  postgres_data:

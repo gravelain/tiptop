@@ -16,7 +16,7 @@ Bienvenue dans le projet **"My Project - The Tip Top"**, une plateforme web de j
 
 ## Introduction
 
-Ce projet repose sur une architecture **microservices** où chaque composant (frontend, backend, base de données, monitoring) est conteneurisé dans un **Docker**. L’infrastructure utilise **Docker Compose** pour l’orchestration des services et **Traefik** comme proxy inverse. Le backend est développé avec **NestJS** et le frontend avec **Next.js**.
+Ce projet repose sur une architecture **microservices** où chaque composant (frontend, backend, base de données, monitoring) est conteneurisé dans un **Docker**. L’infrastructure utilise **Docker Compose** pour l’orchestration des services et **Traefik** comme proxy inverse. Le backend est développé avec **php symfony** et le frontend avec **Angular**.
 
 L'application s’appuie sur **SonarQube** pour l'analyse de la qualité du code et utilise des bases de données **PostgreSQL** pour SonarQube et **MySQL** pour les données métiers de l’application. **Prometheus** et **Grafana** sont utilisés pour la collecte et la visualisation des métriques de performance.
 
@@ -26,8 +26,8 @@ Le projet est déployé sur un **VPS** avec l'IP [95.111.240.167](http://95.111.
 
 | Technologie  | Utilité  | Justification  |
 |--------------|---------|----------------|
-| **NestJS**  | Backend | Framework modulaire et scalable basé sur Node.js avec support TypeScript, idéal pour des APIs performantes. |
-| **Next.js**  | Frontend | Framework React optimisé pour le rendu côté serveur (SSR) et les performances SEO. |
+| **php symfony**  | Backend | Framework modulaire et scalable, idéal pour des APIs performantes. |
+| **Angular**  | Frontend | Framework React optimisé pour le rendu côté serveur (SSR) et les performances SEO. |
 | **PostgreSQL** | Base de données (SonarQube) | Base relationnelle robuste et performante, utilisée pour stocker les données de SonarQube. |
 | **Docker**  | Conteneurisation | Permet l’isolation des services et assure la portabilité entre les environnements. |
 | **Docker Compose**  | Orchestration des services | Facilite la gestion de multiples conteneurs et leurs dépendances. |
@@ -122,8 +122,8 @@ tiptop/
 
 | Service               | Conteneur         | Port Local | Port VPS (Accès Public) | Description                      |
 |-----------------------|-------------------|------------|-------------------------|----------------------------------|
-| **Frontend (Next.js)** | frontend          | 3000       | 95.111.240.167:3000      | Interface utilisateur           |
-| **Backend (NestJS)**   | backend           | 4000       | 95.111.240.167:4000      | API RESTful du backend          |
+| **Frontend (Angular)** | frontend          | 3000       | 95.111.240.167:3000      | Interface utilisateur           |
+| **Backend (php symfony)**   | backend           | 4000       | 95.111.240.167:4000      | API RESTful du backend          |
 | **Base de Données (MySQL)** | db_mysql        | 3306       | 95.111.240.167:3306      | Base de données MySQL pour l'application |
 | **SonarQube**          | sonarqube         | 9000       | 95.111.240.167:9000      | Analyse de code et qualité du projet |
 | **Base de Données (PostgreSQL pour SonarQube)** | db_postgresql  | 5432       | 95.111.240.167:5432      | Base de données PostgreSQL pour SonarQube |
@@ -291,4 +291,7 @@ docker compose version
 ```
 
 Let's Go ! 🚀
+
+## 📌 Attention : 
+Ce projet est réalisé dans un cadre académique et donc fictif pour lequel aucun réel achat ou aucune réservation ne pourrait etre effectuée ! 
 

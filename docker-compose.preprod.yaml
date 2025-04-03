@@ -33,12 +33,20 @@ services:
   mysql:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_preprod}
-      MYSQL_DATABASE: ${MYSQL_DATABASE_preprod}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_dev}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_dev}
+      MYSQL_USER: ${MYSQL_USER_dev}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD_dev}
     ports:
-      - "3308:3306"  # MySQL sur port 3308 en préprod
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "${MYSQL_USER_dev}", "-p${MYSQL_PASSWORD_dev}"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
     networks:
       - tiptop-network
 

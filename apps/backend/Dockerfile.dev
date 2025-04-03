@@ -32,10 +32,12 @@ COPY apps/backend/composer.json /var/www/html/composer.json
 COPY apps/backend/composer.lock /var/www/html/composer.lock
 
 # Copier tout le reste du projet (y compris le fichier .env) vers le conteneur
-COPY . /var/www/html/
+COPY apps/backend /var/www/html/
 
 # Copier le fichier .env dans le conteneur
 COPY .env /var/www/html/.env
+
+RUN ls -al /var/www/html
 
 # Vérifier que bin/console est bien présent
 RUN ls -al /var/www/html/bin
@@ -45,7 +47,7 @@ RUN composer install --prefer-dist --no-progress --no-interaction
 
 # S'assurer que l'autoloader est bien généré
 RUN composer dump-autoload
-
+RUN symfony console cache:clear
 # Vérifier si bin/console est bien généré
 RUN ls -al /var/www/html/bin/console
 

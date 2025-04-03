@@ -1,0 +1,3 @@
+-- init-db.sql
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE_dev}.* TO 'ml_user_dev'@'%' IDENTIFIED BY '${MYSQL_PASSWORD_dev}';
+FLUSH PRIVILEGES;

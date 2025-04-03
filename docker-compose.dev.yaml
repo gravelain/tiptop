@@ -32,6 +32,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: mysql://${MYSQL_USER_dev}:${MYSQL_PASSWORD_dev}@mysql:3306/${MYSQL_DATABASE_dev}
     env_file:
+      - .env
       - apps/backend/.env
     ports:
       - "5001:5000"

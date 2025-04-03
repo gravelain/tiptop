@@ -11,10 +11,8 @@ services:
     ports:
       - "5001:5000"  # Backend sur port 5001 en dev
     volumes:
-      - ./apps/backend:/var/www/html  # Monte le répertoire backend dans /var/www/html
       - /usr/src/app/node_modules
       - ./.env:/var/www/html/.env  # Monte le fichier .env global dans le conteneur
-
     depends_on:
       - mysql
     networks:

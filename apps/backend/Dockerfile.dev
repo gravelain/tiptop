@@ -40,6 +40,11 @@ COPY .env /var/www/html/.env
 # Installer les dépendances
 RUN composer install --prefer-dist --no-progress --no-interaction
 
+# S'assurer que l'autoloader est bien généré
+RUN composer dump-autoload
+
+# Vérifier si bin/console est bien généré
+RUN ls -al /var/www/html/bin/console
 # Exposer le port pour PHP-FPM
 EXPOSE 5000
 

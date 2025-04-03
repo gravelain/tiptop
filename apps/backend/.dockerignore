@@ -1,7 +1,5 @@
-vendor
-node_modules
+# Ignore les fichiers inutiles pour Docker
 .git
-var/log
-var/cache
-docker-compose.yml
-*.md
+node_modules
+vendor/
+.env

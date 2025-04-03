@@ -2,9 +2,9 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 DATE := $(shell date +%F)
 
-DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev.yaml
-DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml
-DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
+DOCKER_COMPOSE_DEV = docker compose --env-file ./apps/backend/.env -f docker-compose.yaml -f docker-compose.dev.yaml
+DOCKER_COMPOSE_PREPROD = docker compose --env-file ./apps/backend/.env -f docker-compose.yaml -f docker-compose.preprod.yaml
+DOCKER_COMPOSE_PROD = docker compose --env-file ./apps/backend/.env -f docker-compose.yaml -f docker-compose.prod.yaml
 
 BACKEND_CONTAINER = backend
 FRONTEND_CONTAINER = frontend

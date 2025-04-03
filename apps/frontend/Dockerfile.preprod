@@ -3,9 +3,11 @@ FROM node:18 AS build
 
 WORKDIR /app
 
+# Copier uniquement package.json et package-lock.json pour optimiser le cache Docker
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev  # Installation optimisée sans dépendances de dev
 
+# Copier le reste du code source après installation des dépendances
 COPY . .
 
 # Construire l’application Angular en mode préproduction
@@ -17,8 +19,11 @@ FROM nginx:alpine
 # Copier la configuration optimisée de Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copier les fichiers de build Angular dans le répertoire de Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copier les fichiers de build Angular vers Nginx
+COPY --from=build /app/dist/thetiptop-web /usr/share/nginx/html
+
+# Exposer sur 8081 pour éviter les conflits avec Traefik
+EXPOSE 8081
 
 # Lancer Nginx
 CMD ["nginx", "-g", "daemon off;"]

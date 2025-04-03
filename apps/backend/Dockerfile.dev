@@ -1,58 +1,29 @@
-# Utiliser une image PHP avec FPM et les extensions nécessaires
 FROM php:8.2-fpm
 
-# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les dépendances système et extensions PHP requises par Symfony
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libpq-dev \
-    libzip-dev \
-    libicu-dev \
-    libonig-dev \
-    libxml2-dev \
-    curl \
-    libcurl4-openssl-dev \
-    && docker-php-ext-install \
-    pdo_mysql \
-    zip \
-    intl \
-    opcache \
-    mbstring \
-    xml \
-    curl
+    git unzip libpq-dev libzip-dev libicu-dev \
+    libonig-dev libxml2-dev curl libcurl4-openssl-dev \
+    default-mysql-client \
+    && docker-php-ext-install pdo_mysql zip intl opcache mbstring xml curl
 
-# Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# Installer Composer globalement
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier composer.json depuis apps/backend vers le conteneur
-COPY apps/backend/composer.json /var/www/html/composer.json
-COPY apps/backend/composer.lock /var/www/html/composer.lock
+# Installer wait-for-it pour attendre MySQL
+RUN apt-get install -y wait-for-it
 
-# Copier tout le reste du projet (y compris le fichier .env) vers le conteneur
-COPY apps/backend /var/www/html/
+# Copier le script wait-for-mysql.sh dans le conteneur
+COPY apps/backend/wait-for-mysql.sh /usr/local/bin/wait-for-mysql.sh
 
-# Copier le fichier .env dans le conteneur
-COPY .env /var/www/html/.env
+# Donner les permissions d'exécution au script
+RUN chmod +x /usr/local/bin/wait-for-mysql.sh
 
-RUN ls -al /var/www/html
+# Copier tout le code source
+COPY apps/backend/ /var/www/html/
 
-# Vérifier que bin/console est bien présent
-RUN ls -al /var/www/html/bin
-
-# Installer les dépendances
-RUN composer install --prefer-dist --no-progress --no-interaction
-
-# S'assurer que l'autoloader est bien généré
-RUN composer dump-autoload
-RUN symfony console cache:clear
-# Vérifier si bin/console est bien généré
-RUN ls -al /var/www/html/bin/console
-
-# Exposer le port pour PHP-FPM
 EXPOSE 5000
 
-# Commande pour démarrer PHP-FPM
-CMD ["php-fpm"]
+# Exécuter Composer et d'autres commandes après que le script wait-for-mysql.sh ait vérifié MySQL
+CMD /usr/local/bin/wait-for-mysql.sh mysql:3306 -- composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm

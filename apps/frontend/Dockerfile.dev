@@ -5,16 +5,13 @@ FROM node:18 AS dev
 WORKDIR /app
 
 # Copier uniquement les fichiers package.json et package-lock.json pour optimiser le cache
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-# Installer les dépendances
-RUN npm install
+# Installer les dépendances avec npm ci pour une installation plus rapide et stable
+RUN npm ci
 
 # Copier tout le code source de l'application Angular
 COPY . .
-
-# Activer les volumes pour éviter la perte des modules node_modules
-VOLUME [ "/app/node_modules" ]
 
 # Exposer le port par défaut d'Angular (4200)
 EXPOSE 4200

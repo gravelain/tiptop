@@ -37,6 +37,9 @@ COPY . /var/www/html/
 # Copier le fichier .env dans le conteneur
 COPY .env /var/www/html/.env
 
+# Vérifier que bin/console est bien présent
+RUN ls -al /var/www/html/bin
+
 # Installer les dépendances
 RUN composer install --prefer-dist --no-progress --no-interaction
 
@@ -45,6 +48,7 @@ RUN composer dump-autoload
 
 # Vérifier si bin/console est bien généré
 RUN ls -al /var/www/html/bin/console
+
 # Exposer le port pour PHP-FPM
 EXPOSE 5000
 

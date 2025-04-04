@@ -25,9 +25,13 @@ services:
       dockerfile: ./apps/backend/Dockerfile.dev
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev?serverVersion=14&charset=utf8
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: mydatabase_dev
+      #DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev?serverVersion=14&charset=utf8
+      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev
+    entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
+    command: ["php-fpm"]
     env_file:
-      - .env
       - apps/backend/.env
     ports:
       - "5001:5000"

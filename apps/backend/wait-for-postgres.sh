@@ -1,20 +1,12 @@
 #!/bin/bash
-# wait-for-postgres.sh
+set -e
 
-host="$1"
-port="$2"
-user="$3"
-password="$4"
-shift 4
-cmd="$@"
+echo "Checking PostgreSQL availability on $POSTGRES_HOST:$POSTGRES_PORT with user $POSTGRES_USER..."
 
-echo "Args: host=$host port=$port user=$user password=********"
-echo "Waiting for PostgreSQL at $host:$port..."
-
-until PGPASSWORD=$password psql -h "$host" -U "$user" -d postgres -c '\q' 2>/dev/null; do
-   >&2 echo "PostgreSQL is unavailable - retrying in 2s..."
-   sleep 2
+until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q' 2>/dev/null; do
+  >&2 echo "PostgreSQL is unavailable - retrying in 2s..."
+  sleep 2
 done
 
->&2 echo "PostgreSQL is up - executing command: $cmd"
-exec $cmd
+echo "✅ PostgreSQL is up - continuing..."
+exec "$@"

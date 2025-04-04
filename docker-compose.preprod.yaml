@@ -3,64 +3,62 @@ services:
     image: thierrytemgoua98/mon-backend:latest
     environment:
       NODE_ENV: production
-      DATABASE_URL: mysql://${MYSQL_USER_preprod}:${MYSQL_PASSWORD_preprod}@mysql:3306/${MYSQL_DATABASE_preprod}
+      DATABASE_URL: postgresql://backend:backendpass@postgres_backend:5432/backenddb
     ports:
-      - "5002:5000"  # Backend sur port 5002 en préprod
+      - "5002:5000"
     networks:
       - tiptop-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.preprod.tiptop.com`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=5002"
 
   frontend:
     image: thierrytemgoua98/mon-frontend:latest
     environment:
       NODE_ENV: production
     ports:
-      - "3002:8081"  # Frontend sur port 3002 en préprod
+      - "3002:8081"
     networks:
       - tiptop-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.preprod.tiptop.com`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3002"
 
-  mysql:
-    image: mysql:8
+  postgres_sonarqube:
+    image: postgres:14
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_dev}
-      MYSQL_DATABASE: ${MYSQL_DATABASE_dev}
-      MYSQL_USER: ${MYSQL_USER_dev}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD_dev}
-    ports:
-      - "3308:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: mydatabase_preprod
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "${MYSQL_USER_dev}", "-p${MYSQL_PASSWORD_dev}"]
+      test: ["CMD", "pg_isready", "-U", "sonar"]
       interval: 30s
       retries: 5
-      start_period: 10s
+      start_period: 15s
       timeout: 5s
+    ports:
+      - "5433:5432"
+    volumes:
+      - sonar_db_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
 
-  postgres:
+  postgres_backend:
     image: postgres:14
     environment:
-      POSTGRES_USER: ${POSTGRES_USER_preprod}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_preprod}
-      POSTGRES_DB: ${POSTGRES_DB_preprod}
+      POSTGRES_USER: backend
+      POSTGRES_PASSWORD: backendpass
+      POSTGRES_DB: backenddb
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "backend"]
+      interval: 30s
+      retries: 5
+      start_period: 15s
+      timeout: 5s
     ports:
-      - "5435:5432"  # PostgreSQL sur port 5435 en préprod
+      - "5434:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - backend_db_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
 
@@ -69,5 +67,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
-  postgres_data:
+  backend_db_data:
+  sonar_db_data:

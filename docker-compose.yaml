@@ -1,5 +1,5 @@
 services:
-  # Reverse Proxy - Traefik
+  # Traefik - Reverse Proxy
   traefik:
     image: traefik:v2.10
     command:
@@ -20,135 +20,53 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`traefik.tiptop.com`)"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
 
-  # MySQL - Base de données
-  mysql:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_prod}
-      MYSQL_DATABASE: ${MYSQL_DATABASE_prod}
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${MYSQL_ROOT_PASSWORD_prod}"]
-      interval: 30s
-      retries: 5
-      start_period: 10s
-      timeout: 5s
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    networks:
-      - tiptop-network
-
-  # PostgreSQL - Base de données pour SonarQube
-  postgres:
-    image: postgres:14
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER_prod}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_prod}
-      POSTGRES_DB: ${POSTGRES_DB_prod}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER_prod}"]
-      interval: 30s
-      retries: 5
-      start_period: 15s
-      timeout: 5s
-    ports:
-      - "5433:5432"
-    volumes:
-      - sonar_db_data:/var/lib/postgresql/data
-    networks:
-      - tiptop-network
-
-  # SonarQube - Analyse de code
-  sonarqube:
-    image: sonarqube:latest
-    environment:
-      - SONARQUBE_JDBC_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB_prod}
-      - SONARQUBE_JDBC_USERNAME=${POSTGRES_USER_prod}
-      - SONARQUBE_JDBC_PASSWORD=${POSTGRES_PASSWORD_prod}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
-      interval: 30s
-      retries: 5
-      start_period: 15s
-      timeout: 5s
-    ports:
-      - "9001:9000"
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-    networks:
-      - tiptop-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarqube.rule=Host(`sonar.tiptop.com`)"
-      - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
-      - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
-
-  # Prometheus - Monitoring
+  # Prometheus - Surveillance
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.33.1
+    container_name: prometheus
     volumes:
       - prometheus_data:/prometheus
     networks:
       - tiptop-network
-    ports:
-      - "9091:9090"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.tiptop.com`)"
-      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   # Grafana - Visualisation des métriques
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:8.5.5
+    container_name: grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD_prod}
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - tiptop-network
-    ports:
-      - "3001:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.tiptop.com`)"
-      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
-  # Jenkins - CI/CD
+  # Jenkins - CI/CD Server
   jenkins:
     image: jenkins/jenkins:lts
-    user: root
-    environment:
-      JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
-      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+    container_name: jenkins
     ports:
-      - "8082:8080"
+      - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - tiptop-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.tiptop.com`)"
-      - "traefik.http.routers.jenkins.tls.certresolver=letsencrypt"
-      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
 
 networks:
   tiptop-network:
     driver: bridge
 
 volumes:
-  mysql_data:
-  sonar_db_data:
-  sonarqube_data:
   prometheus_data:
   grafana_data:
   jenkins_home:

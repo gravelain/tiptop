@@ -1,40 +1,20 @@
 services:
-  mysql:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD_dev}
-      MYSQL_DATABASE: ${MYSQL_DATABASE_dev}
-      MYSQL_USER: ${MYSQL_USER_dev}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD_dev}
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "${MYSQL_USER_dev}", "-p${MYSQL_PASSWORD_dev}"]
-      interval: 30s
-      retries: 5
-      start_period: 10s
-      timeout: 5s
-    command: >
-      sh -c "/usr/local/bin/wait-for-mysql.sh mysql 3306 $MYSQL_USER_dev $MYSQL_PASSWORD_dev &&
-      composer install --prefer-dist --no-progress --no-interaction &&
-      php bin/console cache:clear --no-warmup &&
-      php-fpm"
-    networks:
-      - tiptop-network
-
   postgres:
     image: postgres:14
     environment:
-      POSTGRES_USER: ${POSTGRES_USER_dev}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_dev}
-      POSTGRES_DB: ${POSTGRES_DB_dev}
+      POSTGRES_USER: bdd_user
+      POSTGRES_PASSWORD: bdd_pass
+      POSTGRES_DB: mydatabase_dev
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "bdd_user"]
+      interval: 30s
+      retries: 5
+      start_period: 15s
+      timeout: 5s
     ports:
-      - "5434:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg_db_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
 
@@ -44,7 +24,7 @@ services:
       dockerfile: ./apps/backend/Dockerfile.dev
     environment:
       NODE_ENV: development
-      DATABASE_URL: mysql://${MYSQL_USER_dev}:${MYSQL_PASSWORD_dev}@mysql:3306/${MYSQL_DATABASE_dev}
+      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev
     env_file:
       - .env
       - apps/backend/.env
@@ -53,9 +33,6 @@ services:
     volumes:
       - backend_node_modules:/usr/src/app/node_modules
       - ./apps/backend/.env:/var/www/html/.env
-    depends_on:
-      - mysql
-    command: /usr/local/bin/wait-for-mysql.sh && composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup
     networks:
       - tiptop-network
     labels:
@@ -76,13 +53,11 @@ services:
     volumes:
       - ./apps/frontend:/usr/src/app
       - frontend_node_modules:/usr/src/app/node_modules
-    depends_on:
-      - backend
     networks:
       - tiptop-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.tiptop.com`)"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.dev.tiptop.com`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=3002"
@@ -92,7 +67,6 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
-  postgres_data:
+  pg_db_data:
   backend_node_modules:
   frontend_node_modules:

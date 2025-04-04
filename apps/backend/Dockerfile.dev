@@ -1,14 +1,16 @@
-# Utilisation de l'image php:8.2-fpm
+# Utilisation de PHP 8.2 avec FPM
 FROM php:8.2-fpm
 
+# Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Installer les dépendances nécessaires pour SQLite et d'autres extensions PHP
+# Installer les dépendances nécessaires
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libicu-dev \
     libonig-dev libxml2-dev curl libcurl4-openssl-dev \
     sqlite3 libsqlite3-dev \
-    && docker-php-ext-install zip intl opcache mbstring xml dom curl pdo_sqlite
+    && docker-php-ext-install zip intl opcache mbstring xml dom curl pdo pdo_sqlite \
+    && docker-php-ext-enable pdo_sqlite
 
 # Installer Composer globalement
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -16,8 +18,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Copier le code source de l'application backend dans le conteneur
 COPY apps/backend/ /var/www/html/
 
-# Exposer le port 5000 (que tu utiliseras probablement pour PHP-FPM)
-EXPOSE 5000
+# Définir les permissions correctes
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Commande d'entrée : exécuter composer install et php-fpm
-CMD /bin/sh -c "composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm"
+# Installer les dépendances PHP du projet (si composer.json existe)
+RUN if [ -f "composer.json" ]; then composer install --prefer-dist --no-progress --no-interaction; fi
+
+# Exposer le port utilisé par PHP-FPM
+EXPOSE 9000
+
+# Lancer PHP-FPM au démarrage du conteneur
+CMD ["php-fpm"]

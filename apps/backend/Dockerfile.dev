@@ -26,5 +26,5 @@ RUN chmod +x /usr/src/app/docker-entrypoint.sh
 
 EXPOSE 5000
 
-# Exécuter Composer et d'autres commandes après que le script wait-for-postgres.sh ait vérifié PostgreSQL
-CMD /usr/local/bin/wait-for-postgres.sh postgres 5433 bdd_user bdd_pass -- sh -c "composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm"
+# Remplacer la commande de lancement pour exécuter Composer et d'autres commandes après le test de PostgreSQL
+CMD /usr/local/bin/wait-for-postgres.sh postgres 5433 bdd_user bdd_pass -- /bin/sh -c "composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm"

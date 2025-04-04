@@ -17,11 +17,14 @@ services:
       - traefik_certificates:/letsencrypt
     networks:
       - tiptop-network
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`traefik.tiptop.com`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
 
-  # Prometheus - Surveillance
+  # Prometheus - Monitoring
   prometheus:
     image: prom/prometheus:v2.33.1
     container_name: prometheus
@@ -29,11 +32,14 @@ services:
       - prometheus_data:/prometheus
     networks:
       - tiptop-network
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.tiptop.com`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
 
-  # Grafana - Visualisation des métriques
+  # Grafana - Metrics Visualization
   grafana:
     image: grafana/grafana:8.5.5
     container_name: grafana
@@ -43,9 +49,15 @@ services:
       - grafana_data:/var/lib/grafana
     networks:
       - tiptop-network
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.tiptop.com`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
 
   # Jenkins - CI/CD Server
   jenkins:
@@ -58,11 +70,14 @@ services:
       - jenkins_home:/var/jenkins_home
     networks:
       - tiptop-network
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.tiptop.com`)"
+      - "traefik.http.routers.jenkins.entrypoints=websecure"
+      - "traefik.http.routers.jenkins.tls.certresolver=letsencrypt"
 
-  # SonarQube - Code Quality & Analysis
+  # SonarQube - Code Quality
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
@@ -77,13 +92,16 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
     networks:
       - tiptop-network
+    depends_on:
+      - postgres_sonarqube
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"
-    depends_on:
-      - postgres_sonarqube
+      - "traefik.http.routers.sonarqube.entrypoints=websecure"
+      - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
 
-  # PostgreSQL - Base de données pour SonarQube
+  # PostgreSQL for SonarQube
   postgres_sonarqube:
     image: postgres:14
     container_name: postgres_sonarqube
@@ -95,8 +113,9 @@ services:
       - postgres_sonarqube_data:/var/lib/postgresql/data
     networks:
       - tiptop-network
+    restart: unless-stopped
 
-  # Loki - Logs
+  # Loki - Log aggregation
   loki:
     image: grafana/loki:2.5.0
     container_name: loki
@@ -106,9 +125,12 @@ services:
       - loki_data:/loki
     networks:
       - tiptop-network
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.loki.rule=Host(`loki.tiptop.com`)"
+      - "traefik.http.routers.loki.entrypoints=websecure"
+      - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
 
 networks:
   tiptop-network:
@@ -116,11 +138,11 @@ networks:
     driver: bridge
 
 volumes:
-  prometheus_data:       # Volume pour stocker les données de Prometheus
-  grafana_data:          # Volume pour stocker les données de Grafana
-  jenkins_home:          # Volume pour stocker les données de Jenkins
-  traefik_certificates:  # Volume pour stocker les certificats de Traefik
-  sonarqube_data:        # Volume pour stocker les données PostgreSQL pour SonarQube
-  sonarqube_extensions:  # Volume pour stocker les extensions/plugins de SonarQube
-  loki_data:             # Volume pour stocker les logs de Loki
-  postgres_sonarqube_data: # Volume pour stocker les données de PostgreSQL pour SonarQube
+  prometheus_data:
+  grafana_data:
+  jenkins_home:
+  traefik_certificates:
+  sonarqube_data:
+  sonarqube_extensions:
+  loki_data:
+  postgres_sonarqube_data:

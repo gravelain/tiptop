@@ -1,8 +1,14 @@
 #!/bin/bash
-# Attendre que MySQL soit prêt
-until mysql -h mysql -u ${MYSQL_USER_dev} -p${MYSQL_PASSWORD_dev} -e 'select 1'; do
-    echo "Attente que MySQL soit prêt..."
-    sleep 2
+# wait-for-mysql.sh
+
+host="$1"
+shift
+cmd="$@"
+
+until mysqladmin ping -h "$host" --silent; do
+  >&2 echo "MySQL is unavailable - waiting"
+  sleep 2
 done
 
-echo "MySQL est prêt, exécution suivante..."
+>&2 echo "MySQL is up - executing command"
+exec $cmd

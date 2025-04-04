@@ -35,7 +35,6 @@ services:
       DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5433/mydatabase_dev
     entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
     command: ["php-fpm"]
-    
     env_file:
       - apps/backend/.env
     ports:

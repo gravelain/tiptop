@@ -27,12 +27,11 @@ services:
     environment:
       NODE_ENV: development
       POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5433
+      POSTGRES_PORT: 5432 
       POSTGRES_USER: bdd_user
       POSTGRES_PASSWORD: bdd_pass
       POSTGRES_DB: mydatabase_dev
-      #DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5433/mydatabase_dev?serverVersion=14&charset=utf8
-      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5433/mydatabase_dev
+      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev 
     entrypoint: ["/usr/src/app/docker-entrypoint.sh"]
     command: ["php-fpm"]
     env_file:

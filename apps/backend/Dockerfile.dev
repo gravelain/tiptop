@@ -7,6 +7,7 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libicu-dev \
     libonig-dev libxml2-dev curl libcurl4-openssl-dev \
+    sqlite3 libsqlite3-dev \
     && docker-php-ext-install zip intl opcache mbstring xml dom curl pdo_sqlite
 
 # Installer Composer globalement

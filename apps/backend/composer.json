@@ -8,6 +8,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^3.3",
+        "api-platform/doctrine-orm": "^4.1",
+        "api-platform/symfony": "^4.1",
         "deployer/deployer": "^7.4",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",

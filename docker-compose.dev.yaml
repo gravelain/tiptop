@@ -25,7 +25,7 @@ services:
       dockerfile: ./apps/backend/Dockerfile.dev
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev
+      DATABASE_URL: postgresql://bdd_user:bdd_pass@postgres:5432/mydatabase_dev?serverVersion=14&charset=utf8
     env_file:
       - .env
       - apps/backend/.env

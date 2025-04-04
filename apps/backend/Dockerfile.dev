@@ -5,7 +5,7 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     git unzip libpq-dev libzip-dev libicu-dev \
     libonig-dev libxml2-dev curl libcurl4-openssl-dev \
-    && docker-php-ext-install pdo_pgsql zip intl opcache mbstring xml curl
+    && docker-php-ext-install pdo_pgsql zip intl opcache mbstring xml dom curl
 
 # Installer Composer globalement
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

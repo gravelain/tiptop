@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# Afficher un message de démarrage
-echo "Démarrage du backend Symfony..."
+# Attendre que PostgreSQL soit prêt
+/usr/local/bin/wait-for-postgres.sh postgres 5432 bdd_user bdd_pass
 
-# Lancer l'application
-exec "$@"
+# Lancer le serveur PHP-FPM
+exec php-fpm

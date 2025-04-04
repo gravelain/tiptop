@@ -1,17 +1,25 @@
 -- Pour l'environnement de développement
-SELECT 1 FROM mysql.user WHERE user = '${MYSQL_USER_dev}' LIMIT 1;
-CREATE USER IF NOT EXISTS '${MYSQL_USER_dev}'@'%' IDENTIFIED WITH caching_sha2_password BY '${MYSQL_PASSWORD_dev}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE_dev}.* TO '${MYSQL_USER_dev}'@'%';
-FLUSH PRIVILEGES;
-
--- Pour l'environnement de préproduction
-SELECT 1 FROM mysql.user WHERE user = '${MYSQL_USER_preprod}' LIMIT 1;
-CREATE USER IF NOT EXISTS '${MYSQL_USER_preprod}'@'%' IDENTIFIED WITH caching_sha2_password BY '${MYSQL_PASSWORD_preprod}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE_preprod}.* TO '${MYSQL_USER_preprod}'@'%';
-FLUSH PRIVILEGES;
+DO
+$$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'bdd_user') THEN
+      CREATE USER bdd_user WITH PASSWORD 'bdd_pass';
+   END IF;
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_database WHERE datname = 'mydatabase_dev') THEN
+      CREATE DATABASE mydatabase_dev;
+   END IF;
+END
+$$;
 
 -- Pour l'environnement de production
-SELECT 1 FROM mysql.user WHERE user = '${MYSQL_USER_prod}' LIMIT 1;
-CREATE USER IF NOT EXISTS '${MYSQL_USER_prod}'@'%' IDENTIFIED WITH caching_sha2_password BY '${MYSQL_PASSWORD_prod}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE_prod}.* TO '${MYSQL_USER_prod}'@'%';
-FLUSH PRIVILEGES;
+DO
+$$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'backend') THEN
+      CREATE USER backend WITH PASSWORD 'backendpass';
+   END IF;
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_database WHERE datname = 'backenddb') THEN
+      CREATE DATABASE backenddb;
+   END IF;
+END
+$$;

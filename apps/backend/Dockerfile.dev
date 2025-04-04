@@ -5,24 +5,23 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     git unzip libpq-dev libzip-dev libicu-dev \
     libonig-dev libxml2-dev curl libcurl4-openssl-dev \
-    default-mysql-client \
-    && docker-php-ext-install pdo_mysql zip intl opcache mbstring xml curl
+    && docker-php-ext-install pdo_pgsql zip intl opcache mbstring xml curl
 
 # Installer Composer globalement
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN apt-get install -y wait-for-it
 
-# Copier le script wait-for-mysql.sh dans le conteneur
-COPY apps/backend/wait-for-mysql.sh /usr/local/bin/wait-for-mysql.sh
+# Copier le script wait-for-postgres.sh dans le conteneur
+COPY apps/backend/wait-for-postgres.sh /usr/local/bin/wait-for-postgres.sh
 
 # Donner les permissions d'exécution au script
-RUN chmod +x /usr/local/bin/wait-for-mysql.sh
+RUN chmod +x /usr/local/bin/wait-for-postgres.sh
 
 # Copier tout le code source
 COPY apps/backend/ /var/www/html/
 
 EXPOSE 5000
 
-# Exécuter Composer et d'autres commandes après que le script wait-for-mysql.sh ait vérifié MySQL
-CMD /usr/local/bin/wait-for-mysql.sh mysql:3306 -- composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm
+# Exécuter Composer et d'autres commandes après que le script wait-for-postgres.sh ait vérifié PostgreSQL
+CMD /usr/local/bin/wait-for-postgres.sh postgres:5432 bdd_user bdd_pass -- composer install --prefer-dist --no-progress --no-interaction && php bin/console cache:clear --no-warmup && php-fpm

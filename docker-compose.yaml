@@ -93,7 +93,8 @@ services:
     networks:
       - tiptop-network
     depends_on:
-      - postgres_sonarqube
+      postgres_sonarqube:
+        condition: service_healthy
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -114,6 +115,11 @@ services:
     networks:
       - tiptop-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Loki - Log aggregation
   loki:

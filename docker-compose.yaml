@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # Traefik - Reverse Proxy
   traefik:
@@ -62,13 +64,65 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.tiptop.com`)"
 
+  # SonarQube - Code Quality & Analysis
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://postgres_sonarqube:5432/mydatabase_prod
+      - SONARQUBE_JDBC_USERNAME=sonar
+      - SONARQUBE_JDBC_PASSWORD=sonar
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"
+    depends_on:
+      - postgres_sonarqube
+
+  # PostgreSQL - Base de données pour SonarQube
+  postgres_sonarqube:
+    image: postgres:14
+    container_name: postgres_sonarqube
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: mydatabase_prod
+    volumes:
+      - postgres_sonarqube_data:/var/lib/postgresql/data
+    networks:
+      - tiptop-network
+
+  # Loki - Logs
+  loki:
+    image: grafana/loki:2.5.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=Host(`loki.tiptop.com`)"
+
 networks:
   tiptop-network:
     name: my-project-the-tiptop_tiptop-network
     driver: bridge
 
 volumes:
-  prometheus_data:
-  grafana_data:
-  jenkins_home:
-  traefik_certificates:
+  prometheus_data:       # Volume pour stocker les données de Prometheus
+  grafana_data:          # Volume pour stocker les données de Grafana
+  jenkins_home:          # Volume pour stocker les données de Jenkins
+  traefik_certificates:  # Volume pour stocker les certificats de Traefik
+  sonarqube_data:        # Volume pour stocker les données PostgreSQL pour SonarQube
+  sonarqube_extensions:  # Volume pour stocker les extensions/plugins de SonarQube
+  loki_data:             # Volume pour stocker les logs de Loki
+  postgres_sonarqube_data: # Volume pour stocker les données de PostgreSQL pour SonarQube

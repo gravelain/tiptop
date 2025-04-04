@@ -1,11 +1,14 @@
 doctrine:
     dbal:
+        # Utilise la variable d'environnement DATABASE_URL pour la configuration de la base de données
         url: '%env(resolve:DATABASE_URL)%'
-        driver: 'pdo_pgsql'
-        server_version: '14'
+        driver: 'pdo_sqlite'
         charset: UTF8
+        # Le chemin de la base de données SQLite, il sera résolu avec %kernel.project_dir%
+        path: '%kernel.project_dir%/var/data.db'
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -26,7 +29,7 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
+            # Si tu as un suffixe spécifique pour les tests
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:

@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: bdd_pass
       POSTGRES_DB: mydatabase_dev
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "bdd_user"]
+      test: ["CMD", "pg_isready", "-U", "bdd_user", "-d", "mydatabase_dev"]
       interval: 30s
       retries: 5
       start_period: 15s

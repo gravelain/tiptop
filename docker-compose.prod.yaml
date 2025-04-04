@@ -3,7 +3,7 @@ services:
     image: thierrytemgoua98/mon-backend:latest
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://backend:backendpass@postgres_backend:5432/backenddb
+      DATABASE_URL: postgresql://backend:backendpass@postgres_backend:5434/backenddb
     ports:
       - "5003:5000"
     networks:

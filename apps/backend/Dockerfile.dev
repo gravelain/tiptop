@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y \
 # Installer Composer globalement
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Installer wait-for-it pour attendre MySQL
-RUN apt-get install -y wait-for-it
-
 # Copier le script wait-for-mysql.sh dans le conteneur
 COPY apps/backend/wait-for-mysql.sh /usr/local/bin/wait-for-mysql.sh
 

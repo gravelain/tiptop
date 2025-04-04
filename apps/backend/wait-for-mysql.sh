@@ -8,8 +8,7 @@ password="$4"
 shift 4
 cmd="$@"
 
-# Debug : Afficher les arguments passés au script
-echo "Args: host=$host port=$port user=$user password=$password"
+echo "Args: host=$host port=$port user=$user password=********"
 echo "Waiting for MySQL at $host:$port..."
 
 until mysqladmin ping -h "$host" -P "$port" -u "$user" -p"$password" --silent; do

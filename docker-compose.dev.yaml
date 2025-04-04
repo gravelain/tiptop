@@ -18,10 +18,10 @@ services:
       start_period: 10s
       timeout: 5s
     command: >
-      /usr/local/bin/wait-for-mysql.sh mysql 3306 ${MYSQL_USER_dev} ${MYSQL_PASSWORD_dev}
+      sh -c "/usr/local/bin/wait-for-mysql.sh mysql 3306 $MYSQL_USER_dev $MYSQL_PASSWORD_dev &&
       composer install --prefer-dist --no-progress --no-interaction &&
       php bin/console cache:clear --no-warmup &&
-      php-fpm
+      php-fpm"
     networks:
       - tiptop-network
 

@@ -75,6 +75,7 @@ services:
 
 networks:
   tiptop-network:
+    name: my-project-the-tiptop_tiptop-network
     driver: bridge
 
 volumes:

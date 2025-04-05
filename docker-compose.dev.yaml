@@ -3,13 +3,12 @@ services:
     image: traefik:v2.10
     container_name: traefik
     command:
-      - --providers.docker=true
+      - --providers.docker
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.letsencrypt.acme.email=admin@tiptop.com
       - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
-      - --api.dashboard=true
     ports:
       - "80:80"
       - "443:443"
@@ -21,10 +20,9 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.dsp5-archi-f24a-15m-g3.fr`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://$1"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.permanent=true"
 
   backend:
     build:

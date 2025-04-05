@@ -2,12 +2,13 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 DATE := $(shell date +%F)
 
-DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev.yaml
-DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml
-DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
+# Définir les fichiers docker-compose pour chaque environnement avec la gestion des fichiers .env
+DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --env-file .env.dev
+DOCKER_COMPOSE_DEV_LOCAL = docker compose -f docker-compose.yaml -f docker-compose.dev-local.yaml --env-file .env.dev-local
+DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml --env-file .env.preprod
+DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml --env-file .env.prod
 
-DOCKER_COMPOSE_DEV_LOCAL = docker compose -f docker-compose.yaml -f docker-compose.dev-local.yaml
-
+# Nom des conteneurs pour chaque service
 BACKEND_CONTAINER = backend
 FRONTEND_CONTAINER = frontend
 
@@ -15,7 +16,7 @@ FRONTEND_CONTAINER = frontend
 up-dev: ## Démarre l'environnement de développement
 	$(DOCKER_COMPOSE_DEV) up -d --build
 
-up-dev-local: ## Démarre l'environnement de développement
+up-dev-local: ## Démarre l'environnement de développement local
 	$(DOCKER_COMPOSE_DEV_LOCAL) up -d --build
 
 up-preprod: ## Démarre l'environnement de préproduction
@@ -27,6 +28,9 @@ up-prod: ## Démarre l'environnement de production
 down-dev: ## Stoppe l'environnement de développement
 	$(DOCKER_COMPOSE_DEV) down
 
+down-dev-local: ## Stoppe l'environnement de développement local
+	$(DOCKER_COMPOSE_DEV_LOCAL) down
+
 down-preprod: ## Stoppe l'environnement de préproduction
 	$(DOCKER_COMPOSE_PREPROD) down
 
@@ -35,6 +39,9 @@ down-prod: ## Stoppe l'environnement de production
 
 restart-dev: ## Redémarre dev proprement
 	make down-dev && make up-dev
+
+restart-dev-local: ## Redémarre dev-local proprement
+	make down-dev-local && make up-dev-local
 
 restart-preprod: ## Redémarre préprod proprement
 	make down-preprod && make up-preprod
@@ -45,6 +52,9 @@ restart-prod: ## Redémarre prod proprement
 logs-dev: ## Affiche les logs des conteneurs en dev
 	$(DOCKER_COMPOSE_DEV) logs -f
 
+logs-dev-local: ## Affiche les logs des conteneurs en dev-local
+	$(DOCKER_COMPOSE_DEV_LOCAL) logs -f
+
 logs-preprod: ## Affiche les logs en préprod
 	$(DOCKER_COMPOSE_PREPROD) logs -f
 
@@ -54,6 +64,9 @@ logs-prod: ## Affiche les logs en prod
 ### BUILD ###
 build-dev: ## Build les conteneurs en dev
 	$(DOCKER_COMPOSE_DEV) build
+
+build-dev-local: ## Build les conteneurs en dev-local
+	$(DOCKER_COMPOSE_DEV_LOCAL) build
 
 build-preprod: ## Build en préprod
 	$(DOCKER_COMPOSE_PREPROD) build

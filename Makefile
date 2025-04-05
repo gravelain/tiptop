@@ -3,10 +3,10 @@ BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 DATE := $(shell date +%F)
 
 # Définir les fichiers docker-compose pour chaque environnement avec la gestion des fichiers .env
-DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --env-file .env.dev
-DOCKER_COMPOSE_DEV_LOCAL = docker compose -f docker-compose.yaml -f docker-compose.dev-local.yaml --env-file .env.dev-local
-DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml --env-file .env.preprod
-DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml --env-file .env.prod
+DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --env-file apps/backend/.env.dev --env-file apps/frontend/.env.dev
+DOCKER_COMPOSE_DEV_LOCAL = docker compose -f docker-compose.yaml -f docker-compose.dev-local.yaml --env-file apps/backend/.env.dev-local --env-file apps/frontend/.env.dev-local
+DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml --env-file apps/backend/.env.preprod --env-file apps/frontend/.env.preprod
+DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml --env-file apps/backend/.env.prod --env-file apps/frontend/.env.prod
 
 # Nom des conteneurs pour chaque service
 BACKEND_CONTAINER = backend

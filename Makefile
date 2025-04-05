@@ -6,12 +6,17 @@ DOCKER_COMPOSE_DEV = docker compose -f docker-compose.yaml -f docker-compose.dev
 DOCKER_COMPOSE_PREPROD = docker compose -f docker-compose.yaml -f docker-compose.preprod.yaml
 DOCKER_COMPOSE_PROD = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
 
+DOCKER_COMPOSE_DEV_LOCAL = docker compose -f docker-compose.yaml -f docker-compose.dev-local.yaml
+
 BACKEND_CONTAINER = backend
 FRONTEND_CONTAINER = frontend
 
 ### ALIASES POUR DÉMARRER LES ENVIRONNEMENTS ###
 up-dev: ## Démarre l'environnement de développement
 	$(DOCKER_COMPOSE_DEV) up -d --build
+
+up-dev-local: ## Démarre l'environnement de développement
+	$(DOCKER_COMPOSE_DEV_LOCAL) up -d --build
 
 up-preprod: ## Démarre l'environnement de préproduction
 	$(DOCKER_COMPOSE_PREPROD) up -d --build

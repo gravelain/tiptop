@@ -14,16 +14,16 @@ FRONTEND_CONTAINER = frontend
 
 ### ALIASES POUR DÉMARRER LES ENVIRONNEMENTS ###
 up-dev: ## Démarre l'environnement de développement
-	$(DOCKER_COMPOSE_DEV) up -d --build
+	$(DOCKER_COMPOSE_DEV) up -d --build --env NODE_ENV=dev
 
 up-dev-local: ## Démarre l'environnement de développement local
-	$(DOCKER_COMPOSE_DEV_LOCAL) up -d --build
+	$(DOCKER_COMPOSE_DEV_LOCAL) up -d --build --env NODE_ENV=dev-local
 
 up-preprod: ## Démarre l'environnement de préproduction
-	$(DOCKER_COMPOSE_PREPROD) up -d --build
+	$(DOCKER_COMPOSE_PREPROD) up -d --build --env NODE_ENV=preprod
 
 up-prod: ## Démarre l'environnement de production
-	$(DOCKER_COMPOSE_PROD) up -d --build
+	$(DOCKER_COMPOSE_PROD) up -d --build --env NODE_ENV=prod
 
 down-dev: ## Stoppe l'environnement de développement
 	$(DOCKER_COMPOSE_DEV) down

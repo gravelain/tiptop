@@ -1,5 +1,4 @@
 services:
-  # Traefik - Reverse Proxy
   traefik:
     image: traefik:v2.10
     command:
@@ -20,11 +19,10 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.tiptop.com`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://$1"
+      - "traefik.http.middlewares.redirect-to-non-www.redirectregex.permanent=true"
 
-  # Prometheus - Monitoring
   prometheus:
     image: prom/prometheus:v2.33.1
     container_name: prometheus
@@ -35,13 +33,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.tiptop.com`)"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.wk-archi-f24a-15m-g3.fr`, `www.prometheus.wk-archi-f24a-15m-g3.fr`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
-    ports:
-      - "9090:9090"  # Expose port 9090 pour Prometheus (accès direct)
+      - "traefik.http.routers.prometheus.middlewares=redirect-to-non-www"
 
-  # Grafana - Metrics Visualization
   grafana:
     image: grafana/grafana:8.5.5
     container_name: grafana
@@ -57,13 +53,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.tiptop.com`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.wk-archi-f24a-15m-g3.fr`, `www.grafana.wk-archi-f24a-15m-g3.fr`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
-    ports:
-      - "3000:3000"  # Expose port 3000 pour Grafana
+      - "traefik.http.routers.grafana.middlewares=redirect-to-non-www"
 
-  # Jenkins - CI/CD Server
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
@@ -77,11 +71,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jenkins.rule=Host(`jenkins.tiptop.com`)"
+      - "traefik.http.routers.jenkins.rule=Host(`jenkins.wk-archi-f24a-15m-g3.fr`, `www.jenkins.wk-archi-f24a-15m-g3.fr`)"
       - "traefik.http.routers.jenkins.entrypoints=websecure"
       - "traefik.http.routers.jenkins.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.jenkins.middlewares=redirect-to-non-www"
 
-  # SonarQube - Code Quality
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
@@ -102,11 +96,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.tiptop.com`)"
+      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.wk-archi-f24a-15m-g3.fr`, `www.sonarqube.wk-archi-f24a-15m-g3.fr`)"
       - "traefik.http.routers.sonarqube.entrypoints=websecure"
       - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.sonarqube.middlewares=redirect-to-non-www"
 
-  # PostgreSQL for SonarQube
   postgres_sonarqube:
     image: postgres:14
     container_name: postgres_sonarqube
@@ -125,7 +119,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Loki - Log aggregation
   loki:
     image: grafana/loki:2.5.0
     container_name: loki
@@ -138,13 +131,14 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.loki.rule=Host(`loki.tiptop.com`)"
+      - "traefik.http.routers.loki.rule=Host(`loki.wk-archi-f24a-15m-g3.fr`, `www.loki.wk-archi-f24a-15m-g3.fr`)"
       - "traefik.http.routers.loki.entrypoints=websecure"
       - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.loki.middlewares=redirect-to-non-www"
 
 networks:
   tiptop-network:
-    name: my-project-the-tiptop_tiptop-network  
+    name: my-project-the-tiptop_tiptop-network
     driver: bridge
 
 volumes:

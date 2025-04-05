@@ -1,13 +1,27 @@
 #!/bin/bash
 
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-BACKUP_DIR="./backups/\$TIMESTAMP"
-mkdir -p "\$BACKUP_DIR"
+# Variables de date
+DATE=$(date +\%Y-\%m-\%d_\%H-\%M-\%S)
 
-echo "[*] Backup Jenkins volume..."
-docker run --rm -v jenkins_data:/data -v "\$PWD/\$BACKUP_DIR":/backup alpine tar czf /backup/jenkins_data.tar.gz -C /data .
+# 1. Sauvegarde de la base de données PostgreSQL (SonarQube)
+echo "Sauvegarde de la base de données PostgreSQL en cours..."
+PG_DUMP_CMD="pg_dump -h postgres_sonarqube -U sonar mydatabase_prod > /path/to/backups/sonar_backup_$DATE.sql"
+$PG_DUMP_CMD
 
-echo "[*] Backup Postgres volume..."
-docker run --rm -v postgres_data:/data -v "\$PWD/\$BACKUP_DIR":/backup alpine tar czf /backup/postgres_data.tar.gz -C /data .
+# Vérifier si la sauvegarde PostgreSQL a réussi
+if [ $? -eq 0 ]; then
+  echo "Sauvegarde PostgreSQL réussie!"
+else
+  echo "Erreur lors de la sauvegarde PostgreSQL"
+fi
 
-echo "[✔] Sauvegarde terminée : \$BACKUP_DIR"
+# 2. Sauvegarde de la base de données SQLite (Backend Symfony)
+echo "Sauvegarde de la base de données SQLite en cours..."
+cp /var/www/html/var/data/mydatabase_dev.sqlite /path/to/backups/mydatabase_dev_$DATE.sqlite
+
+# Vérifier si la sauvegarde SQLite a réussi
+if [ $? -eq 0 ]; then
+  echo "Sauvegarde SQLite réussie!"
+else
+  echo "Erreur lors de la sauvegarde SQLite"
+fi

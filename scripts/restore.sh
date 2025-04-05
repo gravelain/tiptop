@@ -1,16 +1,35 @@
 #!/bin/bash
 
-if [ -z "\$1" ]; then
-  echo "Usage: ./restore.sh <backup-folder>"
-  exit 1
+# Variables de date et chemins de sauvegarde
+DATE=$(date +\%Y-\%m-\%d_\%H-\%M-\%S)
+
+# 1. Restauration de la base de données PostgreSQL (SonarQube)
+echo "Restauration de la base de données PostgreSQL en cours..."
+PG_RESTORE_CMD="psql -h postgres_sonarqube -U sonar mydatabase_prod < /path/to/backups/sonar_backup_$DATE.sql"
+
+# Vérification si le fichier de sauvegarde PostgreSQL existe
+if [ -f "/path/to/backups/sonar_backup_$DATE.sql" ]; then
+  $PG_RESTORE_CMD
+  # Vérifier si la restauration PostgreSQL a réussi
+  if [ $? -eq 0 ]; then
+    echo "Restauration PostgreSQL réussie!"
+  else
+    echo "Erreur lors de la restauration PostgreSQL"
+  fi
+else
+  echo "Le fichier de sauvegarde PostgreSQL n'existe pas."
 fi
 
-BACKUP_DIR="./backups/\$1"
-
-echo "[*] Restoring Jenkins..."
-docker run --rm -v jenkins_data:/data -v "\$PWD/\$BACKUP_DIR":/backup alpine sh -c "rm -rf /data/* && tar xzf /backup/jenkins_data.tar.gz -C /data"
-
-echo "[*] Restoring Postgres..."
-docker run --rm -v postgres_data:/data -v "\$PWD/\$BACKUP_DIR":/backup alpine sh -c "rm -rf /data/* && tar xzf /backup/postgres_data.tar.gz -C /data"
-
-echo "[✔] Restauration terminée"
+# 2. Restauration de la base de données SQLite (Backend Symfony)
+echo "Restauration de la base de données SQLite en cours..."
+if [ -f "/path/to/backups/mydatabase_dev_$DATE.sqlite" ]; then
+  cp /path/to/backups/mydatabase_dev_$DATE.sqlite /var/www/html/var/data/mydatabase_dev.sqlite
+  # Vérifier si la restauration SQLite a réussi
+  if [ $? -eq 0 ]; then
+    echo "Restauration SQLite réussie!"
+  else
+    echo "Erreur lors de la restauration SQLite"
+  fi
+else
+  echo "Le fichier de sauvegarde SQLite n'existe pas."
+fi

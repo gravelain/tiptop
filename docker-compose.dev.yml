@@ -1,0 +1,78 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.email=admin@tiptop.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --api.dashboard=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik_certificates:/letsencrypt
+    networks:
+      - tiptop-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.dsp5-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "sqlite:///%kernel.project_dir%/var/data/mydatabase_dev.sqlite"
+    entrypoint: ["php-fpm"]
+    command: ["php-fpm"]
+    env_file:
+      - apps/backend/.env
+    volumes:
+      - backend_node_modules:/usr/src/app/node_modules
+      - ./apps/backend:/var/www/html
+      - ./apps/backend/.env:/var/www/html/.env
+      - backend_db:/var/www/html/var/data
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.dev.dsp5-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./apps/frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`dev.dsp5-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+
+networks:
+  tiptop-network:
+    driver: bridge
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
+  backend_db:
+  traefik_certificates:

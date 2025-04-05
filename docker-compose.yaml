@@ -1,12 +1,14 @@
 services:
+  # Traefik (pour tous les environnements)
   traefik:
     image: traefik:v2.10
+    container_name: traefik
     command:
       - --providers.docker
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.letsencrypt.acme.email=admin@tiptop.com
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
       - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
     ports:
       - "80:80"
@@ -23,6 +25,7 @@ services:
       - "traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://$1"
       - "traefik.http.middlewares.redirect-to-non-www.redirectregex.permanent=true"
 
+  # Services de Monitoring (Prometheus et Grafana)
   prometheus:
     image: prom/prometheus:v2.33.1
     container_name: prometheus
@@ -33,7 +36,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.wk-archi-f24a-15m-g3.fr`, `www.prometheus.wk-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_WK}`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
       - "traefik.http.routers.prometheus.middlewares=redirect-to-non-www"
@@ -53,11 +56,12 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.wk-archi-f24a-15m-g3.fr`, `www.grafana.wk-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_WK}`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.routers.grafana.middlewares=redirect-to-non-www"
 
+  # Jenkins
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
@@ -71,11 +75,12 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jenkins.rule=Host(`jenkins.wk-archi-f24a-15m-g3.fr`, `www.jenkins.wk-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.jenkins.rule=Host(`jenkins.${DOMAIN_WK}`)"
       - "traefik.http.routers.jenkins.entrypoints=websecure"
       - "traefik.http.routers.jenkins.tls.certresolver=letsencrypt"
       - "traefik.http.routers.jenkins.middlewares=redirect-to-non-www"
 
+  # SonarQube
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
@@ -91,12 +96,11 @@ services:
     networks:
       - tiptop-network
     depends_on:
-      postgres_sonarqube:
-        condition: service_healthy
+      - postgres_sonarqube
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.wk-archi-f24a-15m-g3.fr`, `www.sonarqube.wk-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.${DOMAIN_WK}`)"
       - "traefik.http.routers.sonarqube.entrypoints=websecure"
       - "traefik.http.routers.sonarqube.tls.certresolver=letsencrypt"
       - "traefik.http.routers.sonarqube.middlewares=redirect-to-non-www"
@@ -119,6 +123,69 @@ services:
       timeout: 5s
       retries: 5
 
+  # Backend (avec variables d'environnement dynamiques)
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.${NODE_ENV}
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+    entrypoint: ["php-fpm"]
+    command: ["php-fpm"]
+    env_file:
+      - ./apps/backend/.env.${NODE_ENV}
+    ports:
+      - "5000:5000"
+    volumes:
+      - backend_node_modules:/usr/src/app/node_modules
+      - ./apps/backend:/var/www/html
+      - ./apps/backend/.env:/var/www/html/.env
+      - backend_db:/var/www/html/var/data
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+
+  # Frontend
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.${NODE_ENV}
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    ports:
+      - "3000:4200"
+    volumes:
+      - ./apps/frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    networks:
+      - tiptop-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+
+  # PostgreSQL Backend
+  postgres_backend:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: backend
+      POSTGRES_PASSWORD: backendpass
+      POSTGRES_DB: backenddb
+    ports:
+      - "5432:5432"
+    volumes:
+      - backend_db_data:/var/lib/postgresql/data
+    networks:
+      - tiptop-network
+    restart: unless-stopped
+
+  # Loki (logging)
   loki:
     image: grafana/loki:2.5.0
     container_name: loki
@@ -131,7 +198,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.loki.rule=Host(`loki.wk-archi-f24a-15m-g3.fr`, `www.loki.wk-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.loki.rule=Host(`loki.${DOMAIN_WK}`)"
       - "traefik.http.routers.loki.entrypoints=websecure"
       - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
       - "traefik.http.routers.loki.middlewares=redirect-to-non-www"
@@ -148,5 +215,9 @@ volumes:
   traefik_certificates:
   sonarqube_data:
   sonarqube_extensions:
+  backend_node_modules:
+  frontend_node_modules:
+  backend_db:
   loki_data:
   postgres_sonarqube_data:
+  backend_db_data:

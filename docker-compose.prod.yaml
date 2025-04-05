@@ -8,9 +8,6 @@ services:
       - "5003:5000"
     networks:
       - tiptop-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`backend.prod.tiptop.com`)"
 
   frontend:
     image: thierrytemgoua98/mon-frontend:latest
@@ -22,26 +19,10 @@ services:
       - tiptop-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.prod.tiptop.com`)"
-
-  postgres_sonarqube:
-    image: postgres:14
-    environment:
-      POSTGRES_USER: sonar
-      POSTGRES_PASSWORD: sonar
-      POSTGRES_DB: mydatabase_prod
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "sonar"]
-      interval: 30s
-      retries: 5
-      start_period: 15s
-      timeout: 5s
-    ports:
-      - "5433:5432"
-    volumes:
-      - sonar_db_data:/var/lib/postgresql/data
-    networks:
-      - tiptop-network
+      - "traefik.http.routers.frontend.rule=Host(`dsp5-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.middlewares=redirect-to-non-www"
 
   postgres_backend:
     image: postgres:14
@@ -49,12 +30,6 @@ services:
       POSTGRES_USER: backend
       POSTGRES_PASSWORD: backendpass
       POSTGRES_DB: backenddb
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "backend"]
-      interval: 30s
-      retries: 5
-      start_period: 15s
-      timeout: 5s
     ports:
       - "5434:5432"
     volumes:
@@ -68,4 +43,3 @@ networks:
 
 volumes:
   backend_db_data:
-  sonar_db_data:

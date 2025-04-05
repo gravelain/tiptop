@@ -5,6 +5,8 @@ pipeline {
         BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://95.111.240.167:9000'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last')
+        DOCKER_REGISTRY = 'thierrytemgoua98'
+        DOMAIN = 'yourdomain.com'
     }
 
     tools {
@@ -16,7 +18,8 @@ pipeline {
             steps {
                 echo "Nettoyage et installation des dépendances backend"
                 dir('apps/backend') {
-                    sh 'rm -rf node_modules coverage package-lock.json && npm ci'
+                    // Installation des dépendances PHP via Composer
+                    sh 'rm -rf vendor && composer install --no-interaction --prefer-dist'
                 }
             }
         }
@@ -34,7 +37,8 @@ pipeline {
             steps {
                 echo "Tests backend avec couverture"
                 dir('apps/backend') {
-                    sh 'npm run coverage'
+                    // Exécution des tests backend avec PHPUnit et génération de couverture
+                    sh './vendor/bin/phpunit --coverage-html=coverage'
                 }
             }
             post {
@@ -79,7 +83,7 @@ pipeline {
             steps {
                 echo 'Analyse SonarQube...'
                 withSonarQubeEnv('SonarQube') {
-                    sh 'npx sonar-scanner'
+                    sh 'npx sonar-scanner -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN'
                 }
             }
         }
@@ -99,6 +103,8 @@ pipeline {
             steps {
                 echo 'Compilation du backend...'
                 dir('apps/backend') {
+                    // Compilation des assets ou autres tâches spécifiques de Symfony, si nécessaire
+                    // Par exemple, si tu utilises Webpack :
                     sh 'npm run build'
                 }
             }
@@ -115,17 +121,17 @@ pipeline {
 
         stage('Push Docker Images') {
             when {
-                expression { ['develop','preprod', 'prod'].contains(env.BRANCH_NAME) }
+                expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     echo "Connexion Docker avec l'utilisateur $DOCKER_USER..."
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} apps/backend
-                        docker build -t thierrytemgoua98/mon-frontend:${BRANCH_NAME} apps/frontend
-                        docker push thierrytemgoua98/mon-backend:${BRANCH_NAME}
-                        docker push thierrytemgoua98/mon-frontend:${BRANCH_NAME}
+                        docker build -t $DOCKER_REGISTRY/mon-backend:${BRANCH_NAME} -f apps/backend/Dockerfile.${BRANCH_NAME} .
+                        docker build -t $DOCKER_REGISTRY/mon-frontend:${BRANCH_NAME} -f apps/frontend/Dockerfile.${BRANCH_NAME} .
+                        docker push $DOCKER_REGISTRY/mon-backend:${BRANCH_NAME}
+                        docker push $DOCKER_REGISTRY/mon-frontend:${BRANCH_NAME}
                     '''
                 }
             }

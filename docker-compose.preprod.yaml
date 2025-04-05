@@ -8,9 +8,6 @@ services:
       - "5002:5000"
     networks:
       - tiptop-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`backend.preprod.tiptop.com`)"
 
   frontend:
     image: thierrytemgoua98/mon-frontend:latest
@@ -22,7 +19,10 @@ services:
       - tiptop-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.preprod.tiptop.com`)"
+      - "traefik.http.routers.frontend.rule=Host(`dsp5-archi-f24a-15m-g3.fr`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.middlewares=redirect-to-non-www"
 
   postgres_sonarqube:
     image: postgres:14

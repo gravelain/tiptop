@@ -8,6 +8,8 @@ pipeline {
         SONARQUBE_TOKEN = credentials('sonarqube-token-last') // Token SonarQube
         DOCKER_USER = credentials('token-dockerhub') // DockerHub username
         DOCKER_PASS = credentials('token-dockerhub') // DockerHub password
+        GITHUB_TOKEN = credentials('github_pat') // GitHub Personal Access Token
+        
     }
 
     tools {
@@ -18,8 +20,22 @@ pipeline {
         skipDefaultCheckout(true)
         timeout(time: 60, unit: 'MINUTES')
     }
-
+    
     stages {
+        stage('Checkout Code') {
+            steps {
+                script {
+                    // Utilisation du GitHub PAT pour l'authentification
+                    withCredentials([string(credentialsId: 'github_pat', variable: 'GITHUB_TOKEN')]) {
+                        sh 'git config --global url."https://github.com".insteadOf "https://github.com"'
+                        sh 'git config --global credential.helper "store --file=$HOME/.git-credentials"'
+                        sh 'git config --global user.name "gravelain"'
+                        sh 'git config --global user.email "gravelains@gmail.com"'
+                        sh "git clone https://github.com/gravelain/tiptop.git"
+                    }
+                }
+            }
+        }
 
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {

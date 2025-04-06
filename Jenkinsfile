@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Utilisation du GitHub PAT pour l'authentification
-                    withCredentials([string(credentialsId: 'github_pat', variable: 'GITHUB_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
                         sh 'git config --global url."https://github.com".insteadOf "https://github.com"'
                         sh 'git config --global credential.helper "store --file=$HOME/.git-credentials"'
                         sh 'git config --global user.name "gravelain"'

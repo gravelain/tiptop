@@ -6,10 +6,6 @@ pipeline {
         BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://sonarqube.wk-archi-f24a-15m-g3.fr'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last') // Token SonarQube
-        DOCKER_USER = credentials('token-dockerhub') // DockerHub username
-        DOCKER_PASS = credentials('token-dockerhub') // DockerHub password
-        GITHUB_TOKEN = credentials('github_pat') // GitHub Personal Access Token
-        
     }
 
     tools {
@@ -145,7 +141,7 @@ pipeline {
             }
             steps {
                 // Utilisation des credentials Jenkins pour DockerHub
-                withCredentials([usernamePassword(credentialsId: 'token-dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} -f apps/backend/Dockerfile.${BRANCH_NAME} apps/backend

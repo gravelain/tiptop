@@ -1,25 +1,29 @@
 pipeline {
-    agent any
+    agent none  // Pas d'agent global ici, nous allons définir un agent pour chaque stage
 
     environment {
-        // Variables d'environnement sécurisées
         BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://sonarqube.wk-archi-f24a-15m-g3.fr'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last') // Token SonarQube
     }
 
     tools {
-        nodejs 'NodeJS' // Définir l'environnement NodeJS
+        nodejs 'NodeJS' // Définir l'environnement NodeJS si besoin
     }
 
     stages {
-
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {
+            agent {
+                docker {
+                    image 'php:8.1-cli'  // Image Docker PHP 8.1
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 dir('apps/backend') {
                     sh '''
-                        apt-get update && apt-get install -y unzip git curl php php-cli php-mbstring php-xml php-curl php-sqlite3 php-intl php-zip php-bcmath php-tokenizer
+                        apt-get update && apt-get install -y unzip git curl php-cli php-mbstring php-xml php-curl php-sqlite3 php-intl php-zip php-bcmath php-tokenizer
                         curl -sS https://getcomposer.org/installer | php
                         mv composer.phar /usr/local/bin/composer
                         composer install
@@ -29,6 +33,12 @@ pipeline {
         }
 
         stage('Install Frontend Dependencies (Angular)') {
+            agent {
+                docker {
+                    image 'node:16'  // Image Docker Node.js
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 dir('apps/frontend') {
                     sh 'npm ci'
@@ -38,6 +48,12 @@ pipeline {
 
         // ─────── 🧪 TESTS ───────
         stage('Run Backend Tests (PHPUnit)') {
+            agent {
+                docker {
+                    image 'php:8.1-cli'  // Utilisation de PHP pour le backend
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 dir('apps/backend') {
                     timeout(time: 10, unit: 'MINUTES') {
@@ -60,6 +76,12 @@ pipeline {
         }
 
         stage('Run Frontend Tests') {
+            agent {
+                docker {
+                    image 'node:16'  // Image Docker Node.js pour exécuter les tests frontend
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 dir('apps/frontend') {
                     timeout(time: 10, unit: 'MINUTES') {
@@ -86,6 +108,12 @@ pipeline {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
+            agent {
+                docker {
+                    image 'node:16'  // Utilisation de Node.js pour l'analyse SonarQube
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh 'npx sonar-scanner'
@@ -106,6 +134,12 @@ pipeline {
 
         // ─────── 🛠️ BUILD ───────
         stage('Build Frontend') {
+            agent {
+                docker {
+                    image 'node:16'  // Image Docker Node.js pour le build frontend
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 dir('apps/frontend') {
                     sh 'npm run build'
@@ -114,6 +148,12 @@ pipeline {
         }
 
         stage('Build Backend') {
+            agent {
+                docker {
+                    image 'php:8.1-cli'  // Image Docker PHP pour le backend
+                    args '-v /tmp:/tmp'  // Monter un volume temporaire si nécessaire
+                }
+            }
             steps {
                 echo "Pas de compilation Symfony nécessaire"
             }
@@ -124,8 +164,8 @@ pipeline {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
+            agent any  // Utilise un agent Jenkins classique ici
             steps {
-                // Utilisation des credentials Jenkins pour DockerHub
                 withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
@@ -143,6 +183,7 @@ pipeline {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
+            agent any  // Utilise un agent classique Jenkins ici
             steps {
                 script {
                     def deployScript = "./scripts/deploy_${env.BRANCH_NAME}.sh"
@@ -154,6 +195,7 @@ pipeline {
 
         // ─────── 🧹 CLEANUP ───────
         stage('Cleanup Docker') {
+            agent any  // Utilise un agent classique Jenkins ici
             steps {
                 sh 'docker system prune -f'
             }

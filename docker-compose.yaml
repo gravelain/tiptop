@@ -59,7 +59,7 @@ services:
       - "traefik.http.routers.grafana.middlewares=redirect-to-non-www"
 
   jenkins:
-    image: jenkins/jenkins:2.387.3-lts
+    image: jenkins/jenkins:lts
     container_name: jenkins
     ports:
       - "8080:8080"

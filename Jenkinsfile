@@ -128,7 +128,7 @@ pipeline {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'token-dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} -f apps/backend/Dockerfile.${BRANCH_NAME} apps/backend

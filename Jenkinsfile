@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BRANCH_NAME = "${env.BRANCH_NAME}"
-        SONARQUBE_URL = 'http://95.111.240.167:9000'
+        SONARQUBE_URL = 'http://sonarqube.wk-archi-f24a-15m-g3.fr'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last')
     }
 
@@ -11,39 +11,55 @@ pipeline {
         nodejs 'NodeJS'
     }
 
+    options {
+        skipDefaultCheckout(true)
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
     stages {
-        stage('Install Backend Dependencies') {
+        // ─────── 🔄 CHECKOUT ───────
+        stage('Checkout Code') {
             steps {
-                echo "Nettoyage et installation des dépendances backend"
+                checkout scm
+            }
+        }
+
+        // ─────── 🔧 INSTALL ───────
+        stage('Install Backend Dependencies (Symfony)') {
+            steps {
                 dir('apps/backend') {
-                    sh 'rm -rf node_modules coverage package-lock.json && npm ci'
+                    sh '''
+                        apt-get update && apt-get install -y unzip git curl php php-cli php-mbstring php-xml php-curl php-sqlite3 php-intl php-zip php-bcmath php-tokenizer
+                        curl -sS https://getcomposer.org/installer | php
+                        mv composer.phar /usr/local/bin/composer
+                        composer install
+                    '''
                 }
             }
         }
 
-        stage('Install Frontend Dependencies') {
+        stage('Install Frontend Dependencies (Angular)') {
             steps {
-                echo "Nettoyage et installation des dépendances frontend"
                 dir('apps/frontend') {
-                    sh 'rm -rf node_modules coverage package-lock.json && npm ci'
+                    sh 'npm ci'
                 }
             }
         }
 
-        stage('Run Backend Tests + Coverage') {
+        // ─────── 🧪 TESTS ───────
+        stage('Run Backend Tests (PHPUnit)') {
             steps {
-                echo "Tests backend avec couverture"
                 dir('apps/backend') {
-                    sh 'npm run coverage'
+                    sh './bin/phpunit --coverage-html coverage'
                 }
             }
             post {
                 always {
                     publishHTML(target: [
-                        reportName : 'Backend Coverage Report',
-                        reportDir  : 'apps/backend/coverage',
+                        reportName: 'Backend Coverage Report',
+                        reportDir: 'apps/backend/coverage',
                         reportFiles: 'index.html',
-                        keepAll    : true,
+                        keepAll: true,
                         allowMissing: true,
                         alwaysLinkToLastBuild: true
                     ])
@@ -51,20 +67,19 @@ pipeline {
             }
         }
 
-        stage('Run Frontend Tests + Coverage') {
+        stage('Run Frontend Tests') {
             steps {
-                echo "Tests frontend avec couverture"
                 dir('apps/frontend') {
-                    sh 'npm run coverage'
+                    sh 'npm run test -- --watch=false --code-coverage'
                 }
             }
             post {
                 always {
                     publishHTML(target: [
-                        reportName : 'Frontend Coverage Report',
-                        reportDir  : 'apps/frontend/coverage',
+                        reportName: 'Frontend Coverage Report',
+                        reportDir: 'apps/frontend/coverage',
                         reportFiles: 'index.html',
-                        keepAll    : true,
+                        keepAll: true,
                         allowMissing: true,
                         alwaysLinkToLastBuild: true
                     ])
@@ -72,12 +87,12 @@ pipeline {
             }
         }
 
+        // ─────── 🔎 SONARQUBE ───────
         stage('SonarQube Analysis') {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
-                echo 'Analyse SonarQube...'
                 withSonarQubeEnv('SonarQube') {
                     sh 'npx sonar-scanner'
                 }
@@ -95,35 +110,32 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
-            steps {
-                echo 'Compilation du backend...'
-                dir('apps/backend') {
-                    sh 'npm run build'
-                }
-            }
-        }
-
+        // ─────── 🛠️ BUILD ───────
         stage('Build Frontend') {
             steps {
-                echo 'Compilation du frontend...'
                 dir('apps/frontend') {
                     sh 'npm run build'
                 }
             }
         }
 
+        stage('Build Backend') {
+            steps {
+                echo "Pas de compilation Symfony nécessaire"
+            }
+        }
+
+        // ─────── 🐳 DOCKER + REGISTRY ───────
         stage('Push Docker Images') {
             when {
-                expression { ['develop','preprod', 'prod'].contains(env.BRANCH_NAME) }
+                expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    echo "Connexion Docker avec l'utilisateur $DOCKER_USER..."
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} apps/backend
-                        docker build -t thierrytemgoua98/mon-frontend:${BRANCH_NAME} apps/frontend
+                        docker build -t thierrytemgoua98/mon-backend:${BRANCH_NAME} -f apps/backend/Dockerfile.${BRANCH_NAME} apps/backend
+                        docker build -t thierrytemgoua98/mon-frontend:${BRANCH_NAME} -f apps/frontend/Dockerfile.${BRANCH_NAME} apps/frontend
                         docker push thierrytemgoua98/mon-backend:${BRANCH_NAME}
                         docker push thierrytemgoua98/mon-frontend:${BRANCH_NAME}
                     '''
@@ -131,24 +143,24 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        // ─────── 🚀 DEPLOY ───────
+        stage('Deploy Environment') {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
                 script {
-                    def deployScript = ''
-                    if (env.BRANCH_NAME == 'develop') {
-                        deployScript = './scripts/deploy_develop.sh'
-                    } else if (env.BRANCH_NAME == 'preprod') {
-                        deployScript = './scripts/deploy_preprod.sh'
-                    } else if (env.BRANCH_NAME == 'prod') {
-                        deployScript = './scripts/deploy_prod.sh'
-                    }
-
-                    echo "Déploiement en cours pour la branche ${BRANCH_NAME}..."
+                    def deployScript = "./scripts/deploy_${env.BRANCH_NAME}.sh"
+                    echo "Déploiement avec ${deployScript}"
                     sh deployScript
                 }
+            }
+        }
+
+        // ─────── 🧹 CLEANUP ───────
+        stage('Cleanup Docker') {
+            steps {
+                sh 'docker system prune -f'
             }
         }
     }
@@ -157,15 +169,18 @@ pipeline {
         success {
             script {
                 if (env.BRANCH_NAME == 'prod') {
-                    echo 'Pipeline prod terminé avec succès. Lancement backup...'
+                    echo 'Pipeline prod terminé avec succès. Lancement du backup...'
                     sh './scripts/backup.sh'
                 } else {
-                    echo "Pipeline terminé avec succès sur branche ${BRANCH_NAME}"
+                    echo "✅ Pipeline terminée avec succès sur branche ${BRANCH_NAME}"
                 }
             }
         }
         failure {
-            echo "Pipeline échoué sur branche ${BRANCH_NAME}"
+            echo "❌ Échec de la pipeline sur branche ${BRANCH_NAME}"
+        }
+        always {
+            echo "📦 Fin d’exécution de la pipeline"
         }
     }
 }

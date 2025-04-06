@@ -6,8 +6,8 @@ pipeline {
         BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://sonarqube.wk-archi-f24a-15m-g3.fr'
         SONARQUBE_TOKEN = credentials('sonarqube-token-last') // Token SonarQube
-        DOCKER_USER = credentials('dockerhub-username') // DockerHub username
-        DOCKER_PASS = credentials('dockerhub-password') // DockerHub password
+        DOCKER_USER = credentials('token-dockerhub') // DockerHub username
+        DOCKER_PASS = credentials('token-dockerhub') // DockerHub password
     }
 
     tools {
@@ -20,7 +20,7 @@ pipeline {
     }
 
     stages {
-        
+
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {
             steps {
@@ -128,6 +128,7 @@ pipeline {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }
             }
             steps {
+                // Utilisation des credentials Jenkins pour DockerHub
                 withCredentials([usernamePassword(credentialsId: 'token-dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin

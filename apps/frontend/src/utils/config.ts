@@ -1,1 +1,1 @@
-export const BASE_URL = "https://api.dsp5-archi-o22a-4-5-g6.fr/api";
+export const BASE_URL = "https://api.dsp5-archi-f24a-15m-g3.fr/api";

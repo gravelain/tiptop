@@ -17,6 +17,7 @@ interface Review {
 export class HomeComponent implements OnInit, AfterViewInit {
   isMobile: boolean = false;
 
+  // Tableau d'avis des clients
   reviews: Review[] = [
     {
       name: 'Serge Dupont',
@@ -49,13 +50,60 @@ export class HomeComponent implements OnInit, AfterViewInit {
       followers: 25,
       posts: 40,
       reviewText: "Jeu fantastique, service rapide."
+    },
+    {
+      name: "Jean Dupont",
+      occupation: "Directeur marketing",
+      stars: 5,
+      followers: 100,
+      posts: 50,
+      reviewText: "Le concours était incroyable ! Les lots sont fantastiques et l'organisation au top !"
+    },
+    {
+      name: "Marie Lemoine",
+      occupation: "Consultante",
+      stars: 4,
+      followers: 80,
+      posts: 60,
+      reviewText: "Excellente expérience. Simple et amusant. J'ai gagné !"
+    },
+    {
+      name: "Pierre Martin",
+      occupation: "Chef de produit",
+      stars: 4,
+      followers: 45,
+      posts: 33,
+      reviewText: "Très bon concours avec une interface facile à utiliser. Je recommande !"
+    },
+    {
+      name: "Sophie Leroy",
+      occupation: "Cadre supérieur",
+      stars: 5,
+      followers: 120,
+      posts: 70,
+      reviewText: "Une expérience unique ! Les lots sont variés et il est facile de participer."
+    },
+    {
+      name: "Marc Lefevre",
+      occupation: "Entrepreneur",
+      stars: 3,
+      followers: 55,
+      posts: 40,
+      reviewText: "J'ai adoré la simplicité du jeu. En plus, j'ai remporté un super lot !"
+    },
+    {
+      name: "Claire Dupuis",
+      occupation: "Designer",
+      stars: 5,
+      followers: 90,
+      posts: 85,
+      reviewText: "Une façon amusante de gagner des prix. La qualité des lots est impressionnante !"
     }
   ];
 
   visibleReviews: Review[] = [];
-
-  currentPage: number = 0;
-  reviewsPerPage: number = 2;
+  currentPage: number = 1;
+  reviewsPerPage: number = 3;
   pages: number[] = [];
 
   constructor() {}
@@ -79,6 +127,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.isMobile = window.innerWidth < 768;
   }
 
+  // Fonction pour la gestion du carrousel
   scrollCarousel(direction: string) {
     const carousel = document.getElementById('carousel');
     if (!carousel) return;
@@ -92,14 +141,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Fonction de pagination
   setCurrentPage(page: number) {
     this.currentPage = page;
     const startIndex = (page - 1) * this.reviewsPerPage;
     this.visibleReviews = this.reviews.slice(startIndex, startIndex + this.reviewsPerPage);
   }
 
+  // Vérifie si le code s'exécute dans un navigateur
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof document !== 'undefined';
   }
-  
 }

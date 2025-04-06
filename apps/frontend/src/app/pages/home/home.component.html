@@ -1,12 +1,12 @@
 <div class="secto bg-gray-100 text-gray-800 flex flex-col min-h-screen">
-  <!-- Header -->
-
   <!-- Section de bienvenue -->
   <main class="flex-grow w-full px-0 mx-0 py-8 secto">
+    <!-- Ribbon avec dates -->
     <div class="ribbon">
       Du 1er au 30 Octobre
     </div>
     
+    <!-- Section d'affichage du concours -->
     <section class="background-spiral">
       <h1 class="text-center text-2xl md:text-4xl mgr">GRAND JEU CONCOURS</h1><br>
       <p class="text-winner text-lg md:text-2xl mgr">100% gagnant !!!</p>
@@ -15,128 +15,74 @@
       <h2 class="text-center text-4xl md:text-6xl font-extrabold text-white mt-4 mgr">THÉ TIP TOP</h2>
       <p class="text-center text-xl md:text-3xl text-white font-bold mgr">500 000 LOTS à gagner !</p>
     
-      <!-- Steps and image of tea -->
+      <!-- Étapes du concours et image -->
       <div class="steps-container">
-        <!-- Step 1 à gauche -->
-        <div class="relative w-64 h-48 mb-6 md:mb-0">
-          <div class="absolute top-0 left-0 flex items-center w-64 h-40 mt-6 ml-6 bg-white border-8 border-gray-700 rounded-lg">
-            <div class="w-1/3 h-40"></div>
-            <div class="w-2/3 h-32 pr-4">
-              <h3 class="pt-1 text-xl font-semibold text-gray-700">1</h3>
-              <p class="pt-1 text-sm text-gray-600">Effectuez un achat de plus de 49€ pour participer.</p>
-            </div>
+        <div class="step" id="step1">
+          <div class="step-box">
+            <h3>1</h3>
+            <p>Effectuez un achat de plus de 49€ pour participer.</p>
           </div>
-          <div class="absolute top-0 left-0 z-10 w-24 h-40 py-20 text-5xl font-bold text-center text-white bg-red-600 rounded-lg">
-            01
-          </div>
+          <div class="step-number bg-red-600">01</div>
         </div>
-    
-        <!-- Step 2 et image du thé alignés verticalement -->
-        <div class="step-2-image-container mb-6 md:mb-0">
-          <div class="relative w-64 h-48">
-            <div class="absolute top-0 left-0 flex items-center w-64 h-40 mt-6 ml-6 bg-white border-8 border-gray-700 rounded-lg">
-              <div class="w-1/3 h-40"></div>
-              <div class="w-2/3 h-32 pr-4">
-                <h3 class="pt-1 text-xl font-semibold text-gray-700">2</h3>
-                <p class="pt-1 text-sm text-gray-600">Recevez un code unique sur votre ticket de caisse.</p>
-              </div>
-            </div>
-            <div class="absolute top-0 left-0 z-10 w-24 h-40 py-20 text-5xl font-bold text-center text-white bg-green-600 rounded-lg">
-              02
-            </div>
+
+        <div class="step" id="step2">
+          <div class="step-box">
+            <h3>2</h3>
+            <p>Recevez un code unique sur votre ticket de caisse.</p>
           </div>
-    
-          <div class="image-tea">
-            <img src="assets/images/tea.webp" alt="Boîte de thé - Lot à gagner" class="w-80" width="300" height="200">
-          </div>
+          <div class="step-number bg-green-600">02</div>
         </div>
-    
-        <!-- Step 3 à droite -->
-        <div class="relative w-64 h-48">
-          <div class="absolute top-0 left-0 flex items-center w-64 h-40 mt-6 ml-6 bg-white border-8 border-gray-700 rounded-lg">
-            <div class="w-1/3 h-40"></div>
-            <div class="w-2/3 h-32 pr-4">
-              <h3 class="pt-1 text-xl font-semibold text-gray-700">3</h3>
-              <p class="pt-1 text-sm text-gray-600">Entrez votre code en ligne pour découvrir votre lot !</p>
-            </div>
+
+        <div class="step" id="step3">
+          <div class="step-box">
+            <h3>3</h3>
+            <p>Entrez votre code en ligne pour découvrir votre lot !</p>
           </div>
-          <div class="absolute top-0 left-0 z-10 w-24 h-40 py-20 text-5xl font-bold text-center text-white bg-blue-600 rounded-lg">
-            03
-          </div>
+          <div class="step-number bg-blue-600">03</div>
         </div>
       </div>
-    
-      <!-- Footer with start button -->
+
+      <!-- Section de Footer avec appel à l'action -->
       <footer class="mt-15 text-center text-white">
         <h3 class="font-bold text-2xl text-white">Jeu ouvert du <span class="font-bold text-red-200">1er au 30 octobre</span>. Tirage au sort final : <span class="font-bold text-red-200">un an de thé gratuit</span> (valeur 360€).</h3>
         
         <a href="/login" class="start-button" id="cta-button" onclick="gtag('event', 'click', { 'event_category': 'CTA Button', 'event_label': 'Home Page' });">Commencer</a>
       </footer>
     </section>
-    
 
-
-
-    <!-- Lots à gagner -->
+    <!-- Section "Lots à gagner" -->
     <section id="lots" class="mt-12 text-center w-full overflow-x-hidden">
       <h3 class="text-xl md:text-2xl font-bold text-green-800 mt-4">Lots à gagner</h3>
       <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-        
         <!-- Infuseur à thé -->
-        <article class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-8 pb-8 pt-40 w-full max-w-md mx-auto text-left">
-          <img src="assets/images/infuseur.webp" alt="Infuseur à thé" class="absolute inset-0 h-full w-full object-cover" loading="lazy"> 
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40"></div>
-          <div class="z-10 flex justify-between items-center mt-3">
-            <h3 class="text-3xl font-bold text-white">Infuseur à thé</h3>
-            <a [routerLink]="['/lots']" [queryParams]="{ id: 'infuseur' }" class="bg-green-500 text-white w-12 h-12 rounded-full flex justify-center items-center hover:bg-green-600 transition" aria-label="Voir Infuseur">
-              <i class="fas fa-arrow-right transform transition-transform duration-300 ease-in-out hover:translate-x-2"></i>
-            </a>
-          </div>
+        <article class="lot-card">
+          <img src="assets/images/infuseur.webp" alt="Infuseur à thé" class="lot-image">
+          <h3 class="lot-title">Infuseur à thé</h3>
+          <a href="/lots/infuseur" class="view-lot-button">Voir le lot</a>
         </article>
-    
-        <!-- Thé detox ou infusion -->
-        <article class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-8 pb-8 pt-40 w-full max-w-md mx-auto text-left">
-          <img src="assets/images/detox.webp" alt="Thé detox ou infusion" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40"></div>
-          <div class="z-10 flex justify-between items-center mt-3">
-            <h3 class="text-3xl font-bold text-white">Thé detox ou infusion</h3>
-            <a [routerLink]="['/lots']" [queryParams]="{ id: 'detox' }" class="bg-green-500 text-white w-12 h-12 rounded-full flex justify-center items-center hover:bg-green-600 transition" aria-label="Voir Detox">
-              <i class="fas fa-arrow-right transform transition-transform duration-300 ease-in-out hover:translate-x-2"></i>
-            </a>
-          </div>
+
+        <!-- Thé detox -->
+        <article class="lot-card">
+          <img src="assets/images/detox.webp" alt="Thé detox ou infusion" class="lot-image">
+          <h3 class="lot-title">Thé detox ou infusion</h3>
+          <a href="/lots/detox" class="view-lot-button">Voir le lot</a>
         </article>
-    
+
         <!-- Thé signature -->
-        <article class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-8 pb-8 pt-40 w-full max-w-md mx-auto text-left">
-          <img src="assets/images/signature.webp" alt="Thé signature" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40"></div>
-          <div class="z-10 flex justify-between items-center mt-3">
-            <h3 class="text-3xl font-bold text-white">Thé signature</h3>
-            <a [routerLink]="['/lots']" [queryParams]="{ id: 'signature' }" class="bg-green-500 text-white w-12 h-12 rounded-full flex justify-center items-center hover:bg-green-600 transition" aria-label="Voir Signature">
-              <i class="fas fa-arrow-right transform transition-transform duration-300 ease-in-out hover:translate-x-2"></i>
-            </a>
-          </div>
+        <article class="lot-card">
+          <img src="assets/images/signature.webp" alt="Thé signature" class="lot-image">
+          <h3 class="lot-title">Thé signature</h3>
+          <a href="/lots/signature" class="view-lot-button">Voir le lot</a>
         </article>
-    
+
         <!-- Coffret découverte -->
-        <article class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-8 pb-8 pt-40 w-full max-w-md mx-auto text-left">
-          <img src="assets/images/decouvertewebp.webp" alt="Coffret découverte" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40"></div>
-          <div class="z-10 flex justify-between items-center mt-3">
-            <h3 class="text-3xl font-bold text-white">Coffret découverte</h3>
-            <a [routerLink]="['/lots']" [queryParams]="{ id: 'decouverte' }" class="bg-green-500 text-white w-12 h-12 rounded-full flex justify-center items-center hover:bg-green-600 transition" aria-label="Voir Découverte">
-              <i class="fas fa-arrow-right transform transition-transform duration-300 ease-in-out hover:translate-x-2"></i>
-            </a>
-          </div>
+        <article class="lot-card">
+          <img src="assets/images/decouvertewebp.webp" alt="Coffret découverte" class="lot-image">
+          <h3 class="lot-title">Coffret découverte</h3>
+          <a href="/lots/decouverte" class="view-lot-button">Voir le lot</a>
         </article>
-      
       </div>
     </section>
-    
-    
-    
-    
-    
 
     <!-- Section "Jeux" -->
     <section id="jeux" class="mt-12 p-6 rounded-lg shadow-lg w-full mx-0">
@@ -157,70 +103,24 @@
       </div>
     </section>
 
-    <!-- Section "Les Avis De Nos Clients" -->    
+    <!-- Section "Les Avis De Nos Clients" -->
     <section class="mt-12 text-center w-full px-0 mx-0">
       <h3 class="text-2xl font-bold text-green-700">Les Avis De Nos Clients</h3>
-    
-      <!-- Display reviews in a grid that centers content on mobile -->
       <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
-    
-        <!-- Loop through visibleReviews -->
-        <div *ngFor="let review of reviews" class="max-w-sm bg-white shadow-xl rounded-lg text-gray-900 p-4 mx-auto">
-    
-          <!-- Background and Avatar -->
-          <div class="bg-blue-100 rounded-t-lg h-32 flex justify-center items-center">
-            <i class="fas fa-user fa-5x text-gray-700"></i> <!-- FontAwesome Icon for Avatar -->
+        <div *ngFor="let review of reviews" class="review-card">
+          <div class="review-avatar">
+            <i class="fas fa-user fa-5x text-gray-700"></i>
           </div>
-    
-          <div class="flex justify-center w-32 h-32 relative -mt-16 border-4 border-white rounded-full bg-gray-200">
-            <i class="fas fa-star fa-3x text-yellow-500 m-auto"></i> <!-- Star Icon -->
+          <div class="review-stars">
+            <i class="fas fa-star fa-3x text-yellow-500"></i>
           </div>
-    
-          <!-- Name and Occupation -->
-          <div class="text-center mt-2">
-            <h2 class="font-semibold">{{ review.name }}</h2>
-            <p class="text-gray-500">{{ review.occupation }}</p>
+          <div class="review-info">
+            <h2>{{ review.name }}</h2>
+            <p>{{ review.occupation }}</p>
           </div>
-    
-          <!-- Review Stats -->
-          <ul class="py-4 mt-2 text-gray-700 flex items-center justify-around">
-            <li class="flex flex-col items-center">
-              <svg class="w-4 fill-current text-blue-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path
-                  d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-              </svg>
-              <div>{{ review.stars }}k</div>
-            </li>
-            <li class="flex flex-col items-center">
-              <svg class="w-4 fill-current text-blue-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path
-                  d="M7 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0 1c2.15 0 4.2.4 6.1 1.09L12 16h-1.25L10 20H4l-.75-4H2L.9 10.09A17.93 17.93 0 0 1 7 9zm8.31.17c1.32.18 2.59.48 3.8.92L18 16h-1.25L16 20h-3.96l.37-2h1.25l1.65-8.83zM13 0a4 4 0 1 1-1.33 7.76 5.96 5.96 0 0 0 0-7.52C12.1.1 12.53 0 13 0z" />
-              </svg>
-              <div>{{ review.followers }}k</div>
-            </li>
-            <li class="flex flex-col items-center">
-              <svg class="w-4 fill-current text-blue-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path
-                  d="M9 12H1v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6h-8v2H9v-2zm0-1H0V5c0-1.1.9-2 2-2h4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v6h-9V9H9v2zm3-8V2H8v1h4z" />
-              </svg>
-              <div>{{ review.posts }}</div>
-            </li>
-          </ul>
-    
-          <!-- Review Text -->
-          <div class="px-4">
-            <p class="text-gray-700">{{ review.reviewText }}</p>
-          </div>
-    
-          <!-- Follow Button -->
-          <div class="p-4 border-t mx-8 mt-2">
-            <button class="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-6 py-2">+ Suivre</button>
-          </div>
+          <p class="review-text">{{ review.reviewText }}</p>
         </div>
-    
       </div>
     </section>
-      
   </main>
-  <!-- Footer -->
 </div>

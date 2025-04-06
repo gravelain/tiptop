@@ -11,27 +11,9 @@ pipeline {
     tools {
         nodejs 'NodeJS' // Définir l'environnement NodeJS
     }
-
-    options {
-        skipDefaultCheckout(true)
-        timeout(time: 60, unit: 'MINUTES')
-    }
     
     stages {
-        stage('Checkout Code') {
-            steps {
-                script {
-                    // Utilisation du GitHub PAT pour l'authentification
-                    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                        sh 'git config --global url."https://github.com".insteadOf "https://github.com"'
-                        sh 'git config --global credential.helper "store --file=$HOME/.git-credentials"'
-                        sh 'git config --global user.name "gravelain"'
-                        sh 'git config --global user.email "gravelains@gmail.com"'
-                        sh "git clone https://github.com/gravelain/tiptop.git"
-                    }
-                }
-            }
-        }
+
 
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {

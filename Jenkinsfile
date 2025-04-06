@@ -2,28 +2,25 @@ pipeline {
     agent any
 
     environment {
+        // Variables d'environnement sécurisées
         BRANCH_NAME = "${env.BRANCH_NAME}"
         SONARQUBE_URL = 'http://sonarqube.wk-archi-f24a-15m-g3.fr'
-        SONARQUBE_TOKEN = credentials('sonarqube-token-last')
+        SONARQUBE_TOKEN = credentials('sonarqube-token-last') // Token SonarQube
+        DOCKER_USER = credentials('dockerhub-username') // DockerHub username
+        DOCKER_PASS = credentials('dockerhub-password') // DockerHub password
     }
 
     tools {
-        nodejs 'NodeJS'
+        nodejs 'NodeJS' // Définir l'environnement NodeJS
     }
 
     options {
         skipDefaultCheckout(true)
-        timeout(time: 30, unit: 'MINUTES')
+        timeout(time: 60, unit: 'MINUTES')
     }
 
     stages {
-        // ─────── 🔄 CHECKOUT ───────
-        stage('Checkout Code') {
-            steps {
-                checkout scm
-            }
-        }
-
+        
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {
             steps {
@@ -87,7 +84,7 @@ pipeline {
             }
         }
 
-        // ─────── 🔎 SONARQUBE ───────
+        // ─────── 🔎 SONARQUBE ANALYSIS ───────
         stage('SonarQube Analysis') {
             when {
                 expression { ['develop', 'preprod', 'prod'].contains(env.BRANCH_NAME) }

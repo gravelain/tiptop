@@ -11,9 +11,8 @@ pipeline {
     tools {
         nodejs 'NodeJS' // Définir l'environnement NodeJS
     }
-    
-    stages {
 
+    stages {
 
         // ─────── 🔧 INSTALL ───────
         stage('Install Backend Dependencies (Symfony)') {
@@ -41,7 +40,9 @@ pipeline {
         stage('Run Backend Tests (PHPUnit)') {
             steps {
                 dir('apps/backend') {
-                    sh './bin/phpunit --coverage-html coverage'
+                    timeout(time: 10, unit: 'MINUTES') {
+                        sh './bin/phpunit --coverage-html coverage'
+                    }
                 }
             }
             post {
@@ -61,7 +62,9 @@ pipeline {
         stage('Run Frontend Tests') {
             steps {
                 dir('apps/frontend') {
-                    sh 'npm run test -- --watch=false --code-coverage'
+                    timeout(time: 10, unit: 'MINUTES') {
+                        sh 'npm run test -- --watch=false --code-coverage'
+                    }
                 }
             }
             post {
@@ -160,11 +163,17 @@ pipeline {
     post {
         success {
             script {
-                if (env.BRANCH_NAME == 'prod') {
-                    echo 'Pipeline prod terminé avec succès. Lancement du backup...'
-                    sh './scripts/backup.sh'
-                } else {
-                    echo "✅ Pipeline terminée avec succès sur branche ${BRANCH_NAME}"
+                try {
+                    if (env.BRANCH_NAME == 'prod') {
+                        echo 'Pipeline prod terminé avec succès. Lancement du backup...'
+                        sh './scripts/backup.sh'
+                    } else {
+                        echo "✅ Pipeline terminée avec succès sur branche ${BRANCH_NAME}"
+                    }
+                } catch (Exception e) {
+                    echo "Erreur lors de l'exécution du backup ou d'autres actions post : ${e.getMessage()}"
+                    currentBuild.result = 'FAILURE'
+                    throw e
                 }
             }
         }
